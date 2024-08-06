@@ -5,7 +5,7 @@ services:
     environment:
       - IP_CHANGE_SECONDS=15
     ports:
-      - 8000:8888
+      - 8800:8888
     restart: unless-stopped
 
   tor-2:

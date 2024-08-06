@@ -18,3 +18,4 @@ soupsieve==2.5
 starlette==0.37.2
 typing_extensions==4.12.2
 urllib3==2.2.2
+readabilipy @ git+https://github.com/Dominik1799/ReadabiliPy.git
