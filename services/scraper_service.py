@@ -1,9 +1,12 @@
 import requests
 import random
+import logging
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
-from settings import TOR_PROXIES, MAX_PROXY_RETRIES
+from settings import TOR_PROXIES, MAX_PROXY_RETRIES, LOG_LEVEL
 from random_header_generator import HeaderGenerator
+
+logging.basicConfig(level=LOG_LEVEL)
 
 def scrape_content_from_url(url: str):
     response = try_to_get_200_on_request(url)
@@ -26,6 +29,7 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
     response = requests.get(url, timeout=timeout,
                             headers={'User-Agent': ua.random, 'Cache-Control': 'max-age=0'})
     if response.status_code < 300 and response.status_code >= 200:
+        logging.log("Got 2xx without proxy using User-Agent only")
         return response
 
     # 2. use user agent with proxies
@@ -36,6 +40,7 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
                                 proxies={"http": proxies[i], "https": proxies[i]}, 
                                 headers={'User-Agent': ua.random, 'Cache-Control': 'max-age=0'})
         if response.status_code < 300 and response.status_code >= 200:
+            logging.log("Got 2xx with proxy using User-Agent")
             return response
 
     # 3. use complete headers with proxies
@@ -55,6 +60,7 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
                                 proxies={"http": proxies[i], "https": proxies[i]},
                                 headers=headers)
         if response.status_code < 300 and response.status_code >= 200:
+            logging.log("Got 2xx with proxy using full fake Headers")
             return response
 
     # # wait for a second and retry with a different IP and set of headers. 
