@@ -31,7 +31,7 @@ def scrape_content_from_url(url: str):
 def try_to_get_200_on_request(url: str, timeout: int = 10):
     ua = UserAgent(
         browsers=["chrome", "firefox", "safari"],
-        operating_systems=["windows", "linux", "macos"],
+        os=["windows", "linux", "macos"],
         platforms=["pc"]
     )
 
