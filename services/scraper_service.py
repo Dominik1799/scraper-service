@@ -17,7 +17,7 @@ def scrape_content_from_url(url: str):
 
     response = try_to_get_200_on_request(url)
 
-    if response is not None and response.status_code < 300 and response.status_code >= 200:
+    if response.status_code < 300 and response.status_code >= 200:
         article = simple_json_from_html_string(response.text, use_readability=True, use_is_probably_readable=False)
         
         if article is None or article["plain_text"] is None:
@@ -49,6 +49,8 @@ def try_to_get_200_on_request(url: str, timeout: int = 7):
         logging.error(e)
         logging.info("Failed to get 2xx without proxy using User-Agent only")
 
+    logging.info("Failed to get 2xx from the provided URL without proxy using User-Agent only")
+
     proxies = TOR_PROXIES
     max_proxy_retries = MAX_PROXY_RETRIES if MAX_PROXY_RETRIES <= len(proxies) else len(proxies)
 
@@ -65,6 +67,8 @@ def try_to_get_200_on_request(url: str, timeout: int = 7):
         except Exception as e:
             logging.error(e)
             logging.info(f"{i + 1}. attempt - failed to get 2xx with proxy using User-Agent")
+
+    logging.info("Failed to get 2xx from the provided URL with proxy using User-Agent only")
 
     # 3. use complete headers with proxies
     # https://pypi.org/project/random-header-generator/ or https://pypi.org/project/fake-headers/
@@ -92,6 +96,11 @@ def try_to_get_200_on_request(url: str, timeout: int = 7):
         
         # use specific country in the first try, then use only us
         country = "us"
+
+    logging.info(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
+                 The status code {response.status_code} from the last request on {url}""")
+
+    return response
 
     # # wait for a second and retry with a different IP and set of headers. 
     # # This is a way to sometimes trick the Captchas, but IMO it's too pricy on time.
