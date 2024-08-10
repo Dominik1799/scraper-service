@@ -29,25 +29,25 @@ jobs:
         tags: |
           fiitteam8/scraper-service:${{ github.run_number }}
 
-  # push-to-test-repo:
-  #   needs: build-and-push
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #   - name: Checkout to test infra repository
-  #     uses: actions/checkout@v4
-  #     with:
-  #       repository: fiitka/test-infra
-  #       ref: 'main'
-  #       token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+  push-to-test-repo:
+    needs: build-and-push
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout to test infra repository
+      uses: actions/checkout@v4
+      with:
+        repository: fiitka/test-infra
+        ref: 'main'
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
 
-  #   - name: Set up git config
-  #     run: |
-  #       git config user.name "adversea GH pipeline"
-  #       git config user.email "bot@adversea.com"
+    - name: Set up git config
+      run: |
+        git config user.name "adversea GH pipeline"
+        git config user.email "bot@adversea.com"
 
-  #   - name: Update fiitteam8/scraper-service image tag in the test infra docker-compose.yaml
-  #     run: |
-  #       sed -i "s/fiitteam8\/scraper-service:.*/fiitteam8\/scraper-service:${{ github.run_number }}/" docker-compose.yaml
-  #       git commit -am "update fiitteam8/scraper-service:${{ github.run_number }} image tag"
-  #       git push origin main
+    - name: Update fiitteam8/scraper-service image tag in the test infra docker-compose.yaml
+      run: |
+        sed -i "s/fiitteam8\/scraper-service:.*/fiitteam8\/scraper-service:${{ github.run_number }}/" docker-compose.yaml
+        git commit -am "update fiitteam8/scraper-service:${{ github.run_number }} image tag"
+        git push origin main
         
