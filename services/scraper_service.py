@@ -12,7 +12,7 @@ logging.basicConfig(level=LOG_LEVEL)
 
 def scrape_content_from_url(url: str):
     article_data = {
-        "body": ""
+        "plain_text": ""
     }
 
     response = try_to_get_200_on_request(url)
@@ -25,7 +25,7 @@ def scrape_content_from_url(url: str):
         
         text_parts = [text["text"] for text in article["plain_text"]]
         full_text = " ".join(text_parts)
-        article_data["body"] = full_text
+        article_data["plain_text"] = full_text
         return article_data
     
     return article_data
@@ -68,7 +68,6 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
 
     # 3. use complete headers with proxies
     # https://pypi.org/project/random-header-generator/ or https://pypi.org/project/fake-headers/
-    # TODO: check root domain (com, de, sk, etc.) and choose country in the headers
     random.shuffle(proxies)
     country = get_country_from_url(url)
     generator = HeaderGenerator(user_agents = "scrape") # the latest user agents will be scraped from https://www.useragentstring.com/
@@ -90,6 +89,9 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
         except Exception as e:
             logging.error(e)
             logging.info(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
+        
+        # use specific country in the first try, then use only us
+        country = "us"
 
     # # wait for a second and retry with a different IP and set of headers. 
     # # This is a way to sometimes trick the Captchas, but IMO it's too pricy on time.
