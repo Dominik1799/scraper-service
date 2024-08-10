@@ -17,7 +17,7 @@ def scrape_content_from_url(url: str):
 
     response = try_to_get_200_on_request(url)
 
-    if response.status_code < 300 and response.status_code >= 200:
+    if response is not None and response.status_code < 300 and response.status_code >= 200:
         article = simple_json_from_html_string(response.text, use_readability=True, use_is_probably_readable=False)
         
         if article is None or article["plain_text"] is None:
