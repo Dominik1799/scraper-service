@@ -1,0 +1,35 @@
+name: PRODUCTION - deploy the newest version
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Setup jq
+      uses: dcarbone/install-jq-action@v2
+
+    - name: Get the newest image tag
+      run: |
+        NEWEST_TAG=$(wget -q -O - "https://hub.docker.com/v2/repositories/fiitteam8/scraper-service/tags" | \
+        jq -r '.results | sort_by(.tag_last_pushed) | .[-1].name')
+        echo "NEWEST_TAG=$NEWEST_TAG" >> $GITHUB_ENV
+
+    - name: Checkout to production infra repository
+      uses: actions/checkout@v4
+      with:
+        repository: fiitka/production-infra
+        ref: 'main'
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+
+    - name: Set up git config
+      run: |
+        git config user.name "adversea GH pipeline"
+        git config user.email "bot@adversea.com"
+
+    - name: Update fiitteam8/scraper-service image tag in the production infra docker-compose.yaml
+      run: |
+        sed -i "s/fiitteam8\/scraper-service:.*/fiitteam8\/scraper-service:${{ env.NEWEST_TAG }}/" docker-compose.yaml
+        git commit -am "update fiitteam8/scraper-service:${{ env.NEWEST_TAG }} image tag"
+        git push origin main
