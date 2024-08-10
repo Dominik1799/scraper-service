@@ -37,42 +37,56 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
 
     # inspired: https://www.zenrows.com/blog/stealth-web-scraping-in-python-avoid-blocking-like-a-ninja#full-set-of-headers
     # 1. use user agent without proxy
-    response = requests.get(url, timeout=timeout,
-                            headers={'User-Agent': ua.random, 'Cache-Control': 'max-age=0'})
-    if response.status_code < 300 and response.status_code >= 200:
-        logging.info("Got 2xx without proxy using User-Agent only")
-        return response
-
-    # 2. use user agent with proxies
-    proxies = TOR_PROXIES
-    random.shuffle(proxies)
-    for i in range(MAX_PROXY_RETRIES):
-        response = requests.get(url, timeout=timeout, 
-                                proxies={"http": proxies[i], "https": proxies[i]}, 
+    try:
+        response = requests.get(url, timeout=timeout,
                                 headers={'User-Agent': ua.random, 'Cache-Control': 'max-age=0'})
         if response.status_code < 300 and response.status_code >= 200:
-            logging.info("Got 2xx with proxy using User-Agent")
+            logging.info("Got 2xx without proxy using User-Agent only")
             return response
+    except Exception as e:
+        logging.error(e)
+        logging.info("Failed to get 2xx without proxy using User-Agent only")
+
+    proxies = TOR_PROXIES
+    max_proxy_retries = MAX_PROXY_RETRIES if MAX_PROXY_RETRIES <= len(proxies) else len(proxies)
+
+    # 2. use user agent with proxies
+    random.shuffle(proxies)
+    for i in range(max_proxy_retries):
+        try:
+            response = requests.get(url, timeout=timeout, 
+                                    proxies={"http": proxies[i], "https": proxies[i]}, 
+                                    headers={'User-Agent': ua.random, 'Cache-Control': 'max-age=0'})
+            if response.status_code < 300 and response.status_code >= 200:
+                logging.info("Got 2xx with proxy using User-Agent")
+                return response
+        except Exception as e:
+            logging.error(e)
+            logging.info(f"{i + 1}. attempt - failed to get 2xx with proxy using User-Agent")
 
     # 3. use complete headers with proxies
     # https://pypi.org/project/random-header-generator/ or https://pypi.org/project/fake-headers/
     # TODO: check root domain (com, de, sk, etc.) and choose country in the headers
     random.shuffle(proxies)
     generator = HeaderGenerator(user_agents = "scrape") # the latest user agents will be scraped from https://www.useragentstring.com/
-    for i in range(MAX_PROXY_RETRIES):
-        headers = generator(
-            country     = "us", 
-            device      = "desktop", 
-            browser     = "chrome", # TODO: switch between mozila, safari, and chrome
-            httpVersion = 1,
-        )
+    for i in range(max_proxy_retries):
+        try:
+            headers = generator(
+                country     = "us", 
+                device      = "desktop", 
+                browser     = "chrome", # TODO: switch between mozila, safari, and chrome
+                httpVersion = 1,
+            )
 
-        response = requests.get(url, timeout=timeout,
-                                proxies={"http": proxies[i], "https": proxies[i]},
-                                headers=headers)
-        if response.status_code < 300 and response.status_code >= 200:
-            logging.info("Got 2xx with proxy using full fake Headers")
-            return response
+            response = requests.get(url, timeout=timeout,
+                                    proxies={"http": proxies[i], "https": proxies[i]},
+                                    headers=headers)
+            if response.status_code < 300 and response.status_code >= 200:
+                logging.info("Got 2xx with proxy using full fake Headers")
+                return response
+        except Exception as e:
+            logging.error(e)
+            logging.info(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
 
     # # wait for a second and retry with a different IP and set of headers. 
     # # This is a way to sometimes trick the Captchas, but IMO it's too pricy on time.
