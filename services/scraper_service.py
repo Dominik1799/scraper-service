@@ -1,8 +1,10 @@
 import requests
 import random
 import logging
+import tldextract
 from fake_useragent import UserAgent
-from settings import TOR_PROXIES, MAX_PROXY_RETRIES, LOG_LEVEL
+from settings import TOR_PROXIES, MAX_PROXY_RETRIES, LOG_LEVEL, \
+    FAKE_HEADER_SUPPORTED_COUNTRIES, BROWSERS
 from random_header_generator import HeaderGenerator
 from readabilipy import simple_json_from_html_string
 
@@ -30,7 +32,7 @@ def scrape_content_from_url(url: str):
 
 def try_to_get_200_on_request(url: str, timeout: int = 10):
     ua = UserAgent(
-        browsers=["chrome", "firefox", "safari"],
+        browsers=BROWSERS,
         os=["windows", "linux", "macos"],
         platforms=["pc"]
     )
@@ -39,7 +41,7 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
     # 1. use user agent without proxy
     try:
         response = requests.get(url, timeout=timeout,
-                                headers={'User-Agent': ua.random, 'Cache-Control': 'max-age=0'})
+                                headers={"User-Agent": ua.random, "Cache-Control": "max-age=0"})
         if response.status_code < 300 and response.status_code >= 200:
             logging.info("Got 2xx without proxy using User-Agent only")
             return response
@@ -56,7 +58,7 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
         try:
             response = requests.get(url, timeout=timeout, 
                                     proxies={"http": proxies[i], "https": proxies[i]}, 
-                                    headers={'User-Agent': ua.random, 'Cache-Control': 'max-age=0'})
+                                    headers={"User-Agent": ua.random, "Cache-Control": "max-age=0"})
             if response.status_code < 300 and response.status_code >= 200:
                 logging.info("Got 2xx with proxy using User-Agent")
                 return response
@@ -68,13 +70,14 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
     # https://pypi.org/project/random-header-generator/ or https://pypi.org/project/fake-headers/
     # TODO: check root domain (com, de, sk, etc.) and choose country in the headers
     random.shuffle(proxies)
+    country = get_country_from_url(url)
     generator = HeaderGenerator(user_agents = "scrape") # the latest user agents will be scraped from https://www.useragentstring.com/
     for i in range(max_proxy_retries):
         try:
             headers = generator(
-                country     = "us", 
+                country     = country, 
                 device      = "desktop", 
-                browser     = "chrome", # TODO: switch between mozila, safari, and chrome
+                browser     = random.choice(BROWSERS),
                 httpVersion = 1,
             )
 
@@ -97,3 +100,7 @@ def try_to_get_200_on_request(url: str, timeout: int = 10):
 
     # 5. use Geolocated proxy
   
+
+def get_country_from_url(url: str):
+    ext = tldextract.extract(url)
+    return ext.suffix if ext.suffix in FAKE_HEADER_SUPPORTED_COUNTRIES else "us"
