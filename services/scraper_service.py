@@ -30,7 +30,7 @@ def scrape_content_from_url(url: str):
     
     return article_data
 
-def try_to_get_200_on_request(url: str, timeout: int = 10):
+def try_to_get_200_on_request(url: str, timeout: int = 7):
     ua = UserAgent(
         browsers=BROWSERS,
         os=["windows", "linux", "macos"],
