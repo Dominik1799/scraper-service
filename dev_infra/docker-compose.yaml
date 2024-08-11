@@ -23,6 +23,8 @@ services:
     command: edis-server --save 60 1 --loglevel info
     volumes:
       - redis-volume:/data
+    ports:
+      - 6379:6379
     restart: unless-stopped
 
 volumes:
