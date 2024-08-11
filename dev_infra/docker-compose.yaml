@@ -16,3 +16,14 @@ services:
     ports:
       - 8888:8888
     restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis:7.4.0-bookworm
+    command: edis-server --save 60 1 --loglevel info
+    volumes:
+      - redis-volume:/data
+    restart: unless-stopped
+
+volumes:
+  redis-volume:
