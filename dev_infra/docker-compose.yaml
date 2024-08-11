@@ -16,3 +16,16 @@ services:
     ports:
       - 8888:8888
     restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis:7.4.0-bookworm
+    command: redis-server --save 60 1 --loglevel notice
+    volumes:
+      - redis-volume:/data
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+
+volumes:
+  redis-volume:

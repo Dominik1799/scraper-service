@@ -17,3 +17,7 @@ ROOT_PATH = str(os.getenv("ROOT_PATH") or "")
 TOR_PROXIES = list((os.getenv("TOR_PROXIES") or "http://127.0.0.1:8888,http://127.0.0.1:8800").split(","))
 MAX_PROXY_RETRIES = int(os.getenv("MAX_PROXY_RETRIES") or 2)
 LOG_LEVEL = int(os.getenv("LOG_LEVEL") or logging.INFO)
+
+REDIS_HOST = str(os.getenv("REDIS_HOST") or "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT") or 6379)
+REDIS_DATABASE = int(os.getenv("REDIS_DATABASE") or 10)

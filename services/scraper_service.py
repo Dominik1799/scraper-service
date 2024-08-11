@@ -7,6 +7,7 @@ from settings import TOR_PROXIES, MAX_PROXY_RETRIES, LOG_LEVEL, \
     FAKE_HEADER_SUPPORTED_COUNTRIES, BROWSERS
 from random_header_generator import HeaderGenerator
 from readabilipy import simple_json_from_html_string
+from databases.redis import store_clean_article, get_cached_clean_article
 
 logging.basicConfig(level=LOG_LEVEL)
 
@@ -14,6 +15,12 @@ def scrape_content_from_url(url: str):
     article_data = {
         "plain_text": ""
     }
+
+    cached_article_plain_text = get_cached_clean_article(url)
+    if cached_article_plain_text is not None:
+        logging.info(f"Found cached article: {url}")
+        article_data["plain_text"] = cached_article_plain_text
+        return article_data
 
     response = try_to_get_200_on_request(url)
 
@@ -25,6 +32,10 @@ def scrape_content_from_url(url: str):
         
         text_parts = [text["text"] for text in article["plain_text"]]
         full_text = " ".join(text_parts)
+
+        if full_text != "":
+            store_clean_article(url, full_text)
+
         article_data["plain_text"] = full_text
         return article_data
     
