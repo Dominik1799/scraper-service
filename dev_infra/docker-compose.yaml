@@ -20,7 +20,7 @@ services:
   redis:
     container_name: redis
     image: redis:7.4.0-bookworm
-    command: edis-server --save 60 1 --loglevel info
+    command: redis-server --save 60 1 --loglevel info
     volumes:
       - redis-volume:/data
     ports:
