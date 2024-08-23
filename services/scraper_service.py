@@ -8,6 +8,9 @@ from settings import TOR_PROXIES, MAX_PROXY_RETRIES, LOG_LEVEL, \
 from random_header_generator import HeaderGenerator
 from readabilipy import simple_json_from_html_string
 from databases.redis import store_clean_article, get_cached_clean_article
+from utilities.clients import GoogleNewsClient, GoogleSearchClient
+from schemas.response import UrlMetadata
+from schemas.request import SupportedCountry
 
 logging.basicConfig(level=LOG_LEVEL)
 
@@ -25,7 +28,7 @@ def scrape_content_from_url(url: str):
     response = try_to_get_200_on_request(url)
 
     if response.status_code < 300 and response.status_code >= 200:
-        article = simple_json_from_html_string(response.text, use_readability=True, use_is_probably_readable=False)
+        article = simple_json_from_html_string(response.text, use_readability=True)
         
         if article is None or article["plain_text"] is None:
             return article_data
@@ -126,3 +129,26 @@ def try_to_get_200_on_request(url: str, timeout: int = 7):
 def get_country_from_url(url: str):
     ext = tldextract.extract(url)
     return ext.suffix if ext.suffix in FAKE_HEADER_SUPPORTED_COUNTRIES else "us"
+
+
+
+def get_urls_about_target(target_name: str, countries: list[SupportedCountry] = []) -> list[UrlMetadata]:
+    logging.info("Getting google search links")
+    google_results = GoogleSearchClient.get_google_search_links(target_name, countries)
+    logging.info("Getting google news links")
+    google_news_results = GoogleNewsClient.get_google_news_links(target_name, countries)
+    logging.info("Data fetching done. Deduplicating...")
+    
+    
+    temp_result: list[UrlMetadata] = []
+    result: list[UrlMetadata] = []
+    seen_urls = set()
+    temp_result.extend(google_news_results)
+    temp_result.extend(google_results)
+    for res in temp_result:
+        if res.url in seen_urls:
+            continue
+        result.append(res)
+    
+    return result
+    

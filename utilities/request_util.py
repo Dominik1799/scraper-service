@@ -16,6 +16,7 @@ def proxy_request(url: str, req_method: str, try_normal_request_first=True, time
         os=["windows", "linux", "macos"],
         platforms=["pc"]
     )
+    response = None
     if try_normal_request_first:
         headers["User-Agent"] = ua.random
         headers["Cache-Control"] = ua.random
@@ -43,7 +44,7 @@ def proxy_request(url: str, req_method: str, try_normal_request_first=True, time
                 return response
         except Exception as e:
             logging.error(e)
-            logging.info(f"{i + 1}. attempt - failed to get 2xx with proxy using User-Agent")
+            logger.debug("Traceback: ", exc_info=True)
     
     random.shuffle(proxies)
     country = get_country_from_url(url)
@@ -65,15 +66,15 @@ def proxy_request(url: str, req_method: str, try_normal_request_first=True, time
                 logging.info("Got 2xx with proxy using full fake Headers")
                 return response
         except Exception as e:
-            logging.error(e)
             logging.info(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
+            logger.debug("Traceback: ", exc_info=True)
         # use specific country in the first try, then use only us
         country = "us"
     
         logging.info(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
                  The status code {response.status_code} from the last request on {url}""")
     
-    return None
+    return response
 
 
 def get_country_from_url(url: str):

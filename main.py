@@ -1,11 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
 from settings import ROOT_PATH
-from routers import scraper_router
+from routers import scraper_router, request_router
 
 app = FastAPI(root_path=ROOT_PATH, title="adversea scraper service")
 
 app.include_router(scraper_router.router)
+app.include_router(request_router.router)
 
 @app.get("/")
 def root():
