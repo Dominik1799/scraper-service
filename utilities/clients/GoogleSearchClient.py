@@ -3,7 +3,7 @@ import copy
 import random
 import requests
 import logging
-from schemas.response import UrlMetadata
+from schemas.response import UrlMetadata, UrlMetadataSourceType
 from schemas.request import SupportedCountry
 
 
@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class GoogleSearch:
-    URL_DATA_SOURCE = "GOOGLE"
     
     COUNTRIES_FILTER_CODES = {
         SupportedCountry.SLOVAKIA: "countrySK",
@@ -55,7 +54,7 @@ class GoogleSearch:
             data = response_json["items"] if "items" in response_json else []
             formatted_data = []
             for d in data:
-                temp = UrlMetadata(url=d["link"], title=d["title"], source=GoogleSearch.URL_DATA_SOURCE)
+                temp = UrlMetadata(url=d["link"], title=d["title"], source=UrlMetadataSourceType.GOOGLE)
                 formatted_data.append(temp)
             logger.info("Google search for " + query + " was successful")
             return formatted_data

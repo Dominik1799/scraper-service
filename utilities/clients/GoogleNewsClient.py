@@ -4,14 +4,13 @@ import feedparser
 from datetime import datetime, timedelta
 from utilities.clients.decodeGoogleNewsUrl import decode_google_news_url
 from utilities.request_util import proxy_request
-from schemas.response import UrlMetadata
+from schemas.response import UrlMetadata, UrlMetadataSourceType
 from schemas.request import SupportedCountry
 import settings
 
 
 
 class GnewsParser:
-    URL_DATA_SOURCE = "GOOGLE_NEWS"
     __BASE_URL = "https://news.google.com/rss/search?q=<QUERY><DATERANGE><LOCALE>"
     __DATE_RANGE = "+after:<AFTER>+before:<BEFORE>"
     __LOCALE = {
@@ -142,6 +141,6 @@ def get_google_news_links(target_name, countries: list[SupportedCountry] = []) -
     
     result = []
     for art in all_articles:
-        temp = UrlMetadata(url=art["link"], title=art["title"], source=GnewsParser.URL_DATA_SOURCE)
+        temp = UrlMetadata(url=art["link"], title=art["title"], source=UrlMetadataSourceType.GOOGLE_NEWS)
         result.append(temp)
     return result
