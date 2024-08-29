@@ -8,9 +8,9 @@ from settings import TOR_PROXIES, MAX_PROXY_RETRIES, LOG_LEVEL, \
 from random_header_generator import HeaderGenerator
 from readabilipy import simple_json_from_html_string
 from databases.redis import store_clean_article, get_cached_clean_article
-from utilities.clients import GoogleNewsClient, GoogleSearchClient
+from utilities.clients import GoogleNewsClient, GoogleSearchClient, BingNewsClient
 from schemas.response import UrlMetadata
-from schemas.request import SupportedCountry
+from schemas.request import SupportedCountry, SupportedSource
 
 logging.basicConfig(level=LOG_LEVEL)
 
@@ -132,23 +132,25 @@ def get_country_from_url(url: str):
 
 
 
-def get_urls_about_target(target_name: str, countries: list[SupportedCountry] = []) -> list[UrlMetadata]:
-    logging.info("Getting google search links")
-    google_results = GoogleSearchClient.get_google_search_links(target_name, countries)
-    logging.info("Getting google news links")
-    google_news_results = GoogleNewsClient.get_google_news_links(target_name, countries)
-    logging.info("Data fetching done. Deduplicating...")
-    
-    
+def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource]) -> list[UrlMetadata]:
     temp_result: list[UrlMetadata] = []
+    sources = set(sources)
+    if (SupportedSource.GOOGLE_NEWS in sources):
+        logging.info("Getting google news links")
+        temp_result.extend(GoogleNewsClient.get_google_news_links(target_name, countries))
+    if (SupportedSource.GOOGLE in sources):
+        logging.info("Getting google search links")
+        temp_result.extend(GoogleSearchClient.get_google_search_links(target_name, countries))
+    if (SupportedSource.BING_NEWS in sources):
+        logging.info("Getting bing news links")
+        temp_result.extend(BingNewsClient.get_bing_news_results(target_name, countries))
+    
+    logging.info("Data fetching done. Deduplicating...")
     result: list[UrlMetadata] = []
     seen_urls = set()
-    temp_result.extend(google_news_results)
-    temp_result.extend(google_results)
     for res in temp_result:
         if res.url in seen_urls:
             continue
         result.append(res)
-    
     return result
     

@@ -8,7 +8,7 @@ logging.basicConfig(level=LOG_LEVEL)
 
 router = APIRouter(prefix="/request", tags=["Make any HTTP request"])
 
-@router.get("/")
+@router.get("/get", description="Make downstream HTTP GET request")
 async def get_url_content(url: str = Query(...)) -> UrlDataResponse:
     try:
         url_data = request_service.get_url_data(url)

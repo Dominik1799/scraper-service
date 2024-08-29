@@ -4,7 +4,7 @@ from services import scraper_service
 from settings import LOG_LEVEL
 from typing import List
 from schemas.response import UrlMetadata
-from schemas.request import Topic, SupportedCountry
+from schemas.request import SupportedCountry, SupportedSource
 
 logging.basicConfig(level=LOG_LEVEL)
 
@@ -21,9 +21,11 @@ async def scrape_url(url: str = Query(...)):
 
 
 @router.get("/links-about-target", description="Scrape URLs about a target from various sources")
-def get_links_about_target(target_name: str, country: List[SupportedCountry] = Query(max_length=3, default = [])) -> list[UrlMetadata]:
+def get_links_about_target(target_name: str, 
+                           country: List[SupportedCountry] = Query(max_length=3, default = []),
+                           source: List[SupportedSource] = Query(default = [SupportedSource.GOOGLE_NEWS], min_length=1)) -> list[UrlMetadata]:
     try:
-        result = scraper_service.get_urls_about_target(target_name, country)
+        result = scraper_service.get_urls_about_target(target_name, country, source)
         return result
     except Exception:
         logging.exception("Error: ")

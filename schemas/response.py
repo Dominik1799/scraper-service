@@ -7,15 +7,16 @@ from enum import Enum
 class UrlDataResponse(BaseModel):
     data: str
     downstream_response: int
-    got_reponse: bool
+    got_response: bool
 
 
 class UrlMetadataSourceType(str, Enum):
     GOOGLE_NEWS = "GOOGLE_NEWS"
     GOOGLE = "GOOGLE"
+    BING_NEWS = "BING_NEWS"
 
     
 class UrlMetadata(BaseModel):
     url: str
     title: str
-    source: Literal["GOOGLE_NEWS", "GOOGLE"]
+    source: UrlMetadataSourceType

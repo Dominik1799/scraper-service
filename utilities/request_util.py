@@ -72,7 +72,7 @@ def proxy_request(url: str, req_method: str, try_normal_request_first=True, time
         country = "us"
     
         logging.info(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
-                 The status code {response.status_code} from the last request on {url}""")
+                 The status code {response.status_code if response is not None else "MISSING"} from the last request on {url}""")
     
     return response
 
