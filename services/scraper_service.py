@@ -8,6 +8,9 @@ from settings import TOR_PROXIES, MAX_PROXY_RETRIES, LOG_LEVEL, \
 from random_header_generator import HeaderGenerator
 from readabilipy import simple_json_from_html_string
 from databases.redis import store_clean_article, get_cached_clean_article
+from utilities.clients import GoogleNewsClient, GoogleSearchClient, BingNewsClient
+from schemas.response import UrlMetadata
+from schemas.request import SupportedCountry, SupportedSource
 
 logging.basicConfig(level=LOG_LEVEL)
 
@@ -25,7 +28,7 @@ def scrape_content_from_url(url: str):
     response = try_to_get_200_on_request(url)
 
     if response.status_code < 300 and response.status_code >= 200:
-        article = simple_json_from_html_string(response.text, use_readability=True, use_is_probably_readable=False)
+        article = simple_json_from_html_string(response.text, use_readability=True)
         
         if article is None or article["plain_text"] is None:
             return article_data
@@ -126,3 +129,28 @@ def try_to_get_200_on_request(url: str, timeout: int = 7):
 def get_country_from_url(url: str):
     ext = tldextract.extract(url)
     return ext.suffix if ext.suffix in FAKE_HEADER_SUPPORTED_COUNTRIES else "us"
+
+
+
+def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource]) -> list[UrlMetadata]:
+    temp_result: list[UrlMetadata] = []
+    sources = set(sources)
+    if (SupportedSource.GOOGLE_NEWS in sources):
+        logging.info("Getting google news links")
+        temp_result.extend(GoogleNewsClient.get_google_news_links(target_name, countries))
+    if (SupportedSource.GOOGLE in sources):
+        logging.info("Getting google search links")
+        temp_result.extend(GoogleSearchClient.get_google_search_links(target_name, countries))
+    if (SupportedSource.BING_NEWS in sources):
+        logging.info("Getting bing news links")
+        temp_result.extend(BingNewsClient.get_bing_news_results(target_name, countries))
+    
+    logging.info("Data fetching done. Deduplicating...")
+    result: list[UrlMetadata] = []
+    seen_urls = set()
+    for res in temp_result:
+        if res.url in seen_urls:
+            continue
+        result.append(res)
+    return result
+    

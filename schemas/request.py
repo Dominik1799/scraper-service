@@ -1,0 +1,18 @@
+from enum import Enum
+
+class Topic(str, Enum):
+    basic_check = "basic_check"
+
+
+class SupportedCountry(str, Enum):
+    SLOVAKIA = "slovakia"
+    USA = "usa"
+    GREAT_BRITAIN = "great_britain"
+    GERMANY = "germany"
+    CZECH_REPUBLIC = "czech_republic"
+
+
+class SupportedSource(str, Enum):
+    GOOGLE_NEWS = "google_news"
+    GOOGLE = "google"
+    BING_NEWS = "bing_news"

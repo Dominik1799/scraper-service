@@ -21,3 +21,236 @@ LOG_LEVEL = int(os.getenv("LOG_LEVEL") or logging.INFO)
 REDIS_HOST = str(os.getenv("REDIS_HOST") or "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT") or 6379)
 REDIS_DATABASE = int(os.getenv("REDIS_DATABASE") or 10)
+
+# list of key pairs. One pair looks like this: engineID:APIKey. Each pair is split via , character
+GOOGLE_SEARCH_API_CREDENTIALS = os.environ.get("GOOGLE_SEARCH_API_CREDENTIALS") or None
+GOOGLE_SEARCH_API_CREDENTIALS = GOOGLE_SEARCH_API_CREDENTIALS.split(",")
+
+BING_NEWS_SEARCH_API_KEY = os.environ.get("BING_NEWS_SEARCH_API_KEY") or None
+
+
+TOPIC_SEARCH_KEYWORDS = {
+    "basic_check": {
+        "en": [],
+        "sk": []
+    },
+    "political_activity": {
+        "en": [
+            "president",
+            "prime minister",
+            "minister",
+            "member of parliament",
+            "mayor",
+            "governor",
+            "chairman",
+            "chairwoman",
+            "candidate",
+            "municipal council",
+            "city council"
+        ],
+        "sk": [
+            "prezident",
+            "premiér",
+            "minister",
+            "poslanec",
+            "poslankyňa",
+            "starosta",
+            "starostka",
+            "primátor",
+            "guvernér",
+            "predseda",
+            "predsedkyňa",
+            "kandidát",
+            "obecné zstupiteľstvo",
+            "mestské zastupiteľstvo",
+            "mestská rada",
+            "obecná rada"
+        ]
+    },
+    "legal_issues": {
+        "en": [
+            "court",
+            "lawsuit",
+            "legal case",
+            "court case",
+            "judge",
+            "verdict",
+            "sentence",
+            "sue",
+            "prosecute",
+            "prosecuted",
+            "defendant",
+            "lawyer",
+            "attorney",
+            "law",
+            "accusation",
+            "accused",
+            "accusations"
+        ],
+        "sk": [
+            "súd",
+            "súdny spor",
+            "spor",
+            "sudca",
+            "sudkyňa",
+            "rozsudok",
+            "zažaloval",
+            "zažalovaný",
+            "zažalovaná",
+            "právnik",
+            "právny zástupca",
+            "zákon",
+            "obžalovaný",
+            "obžalovaná",
+            "odsúdený",
+            "odsúdená",
+            "obžalovaní"
+        ]
+    },
+    "corruption": {
+        "en": [
+            "corruption",
+            "fraud",
+            "bribe",
+            "bribed",
+            "nepotism",
+            "embezzled",
+            "embezzlement"
+        ],
+        "sk": [
+            "korupcia",
+            "korupcie",
+            "korupčná",
+            "podvod",
+            "úplatok",
+            "rodinkárstvo",
+            "úplatky",
+            "podplatil",
+            "podplatila",
+            "nepotizmus",
+            "spreneveril",
+            "spreneverila",
+            "spreneverenie"
+        ]
+    },
+    "financial_crime": {
+        "en": [
+            "business",
+            "sale",
+            "purchase",
+            "suspicious",
+            "leaks",
+            "tax",
+            "fiscal",
+            "pyramid scheme",
+            "fraud",
+            "scam",
+            "theft",
+            "steal",
+            "stole",
+            "corruption",
+            "bankruptcy",
+            "distrain",
+            "distrainment",
+            "distraint"
+        ],
+        "sk": [
+            "obchod",
+            "predaj",
+            "nákup",
+            "podozrivý",
+            "úniky",
+            "dane",
+            "daňový",
+            "pyramída",
+            "pyramídová",
+            "podvod",
+            "krádež",
+            "ukradol",
+            "ukradla",
+            "korupcia",
+            "bankrot",
+            "bankrotom",
+            "exekúcia",
+            "exekúcii",
+            "exekúcií",
+            "exekúcie"
+        ]
+    },
+    "violent_crime": {
+        "en": [
+            "crime",
+            "murder",
+            "assault",
+            "robbery",
+            "shooting",
+            "shoot",
+            "kidnapping",
+            "violence",
+            "violation",
+            "gun",
+            "weapon",
+            "rape",
+            "hate crime",
+            "brawl",
+            "kill",
+            "death",
+            "shootout"
+        ],
+        "sk": [
+            "zločin",
+            "vražda",
+            "útok",
+            "lúpež",
+            "vraždy",
+            "smrť",
+            "streľba",
+            "strieľal",
+            "únos",
+            "násilie",
+            "násilia",
+            "zbraň",
+            "znásilnil",
+            "znásilnila",
+            "znásilnenie",
+            "nenávisť",
+            "bitka",
+            "pobil",
+            "pobila"
+        ]
+    },
+    "sex_crime": {
+        "en": [
+            "rape",
+            "sex",
+            "harassment",
+            "harassed",
+            "molestation",
+            "sexual",
+            "meToo",
+            "porn",
+            "pornography",
+            "pornographic",
+            "inappropriate"
+        ],
+        "sk": [
+            "znásilnenie",
+            "sex",
+            "obťažovanie",
+            "obťažoval",
+            "obťažovala",
+            "znásilnil",
+            "znásilnila",
+            "sexuálne",
+            "sexuálny",
+            "meToo",
+            "porno",
+            "pornografia",
+            "pornografické",
+            "pornografický",
+            "nevhodné",
+            "nevhodný",
+            "nevhodná"
+        ]
+    }
+}
