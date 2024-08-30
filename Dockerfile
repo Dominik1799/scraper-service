@@ -18,4 +18,4 @@ RUN python deployment_setup.py
 
 EXPOSE 8000
 
-CMD [ "fastapi", "run", "--workers" "20"]
+CMD [ "fastapi", "run", "--workers", "20" ]
