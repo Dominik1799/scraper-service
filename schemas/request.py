@@ -10,6 +10,8 @@ class SupportedCountry(str, Enum):
     GREAT_BRITAIN = "great_britain"
     GERMANY = "germany"
     CZECH_REPUBLIC = "czech_republic"
+    AUSTRALIA = "australia"
+    NEW_ZEALAND = "new_zealand"
 
 
 class SupportedSource(str, Enum):

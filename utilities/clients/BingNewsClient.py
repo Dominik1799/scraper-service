@@ -8,13 +8,15 @@ logger = logging.getLogger(__name__)
 
 
 class BingNewsClient:
-    
+    # https://learn.microsoft.com/en-us/bing/search-apis/bing-news-search/reference/market-codes#country-codes
     COUNTRIES_FILTER_CODES = {
         SupportedCountry.SLOVAKIA: "SK",
         SupportedCountry.USA: "US",
         SupportedCountry.GREAT_BRITAIN: "GB",
         SupportedCountry.GERMANY: "DE",
         SupportedCountry.CZECH_REPUBLIC: "CZ",
+        SupportedCountry.AUSTRALIA: "AU",
+        SupportedCountry.NEW_ZEALAND: "NZ",
     }
     
     def get_bing_news_results(self, query: str, countries: list[SupportedCountry]) -> list[UrlMetadata]:

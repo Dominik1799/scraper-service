@@ -13,13 +13,15 @@ logger = logging.getLogger(__name__)
 
 
 class GoogleSearch:
-    
+    # https://developers.google.com/custom-search/docs/json_api_reference#countryCollections
     COUNTRIES_FILTER_CODES = {
         SupportedCountry.SLOVAKIA: "countrySK",
         SupportedCountry.USA: "countryUS",
         SupportedCountry.GREAT_BRITAIN: "countryUK",
         SupportedCountry.GERMANY: "countryDE",
         SupportedCountry.CZECH_REPUBLIC: "countryCZ",
+        SupportedCountry.AUSTRALIA: "countryAU",
+        SupportedCountry.NEW_ZEALAND: "countryNZ",
     }
     
     def __construct_country_filter(self, countries: list[SupportedCountry]):

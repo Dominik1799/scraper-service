@@ -1,6 +1,4 @@
 from pydantic import BaseModel
-from typing import List
-from typing import Literal
 from enum import Enum
 
 

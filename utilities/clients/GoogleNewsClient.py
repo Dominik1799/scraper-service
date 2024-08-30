@@ -19,6 +19,8 @@ class GnewsParser:
         SupportedCountry.GREAT_BRITAIN: "&hl=en-GB&gl=GB&ceid=GB:en",
         SupportedCountry.GERMANY: "&hl=de&gl=DE&ceid=DE:de",
         SupportedCountry.CZECH_REPUBLIC: "&hl=cs&gl=CZ&ceid=CZ:cs",
+        SupportedCountry.AUSTRALIA: "&hl=en-AU&gl=AU&ceid=AU%3Aen",
+        SupportedCountry.NEW_ZEALAND: "&hl=en-NZ&gl=NZ&ceid=NZ%3Aen",
         # TODO: uncomment them when we add their support to SupportedCountries object
         # "bg-bg": "&hl=bg&gl=BG&ceid=BG:bg", # bulgarian
         # "fr-fr": "&hl=fr&gl=FR&ceid=FR:fr",
