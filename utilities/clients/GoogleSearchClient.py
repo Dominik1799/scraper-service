@@ -51,7 +51,7 @@ class GoogleSearch:
             if response.status_code >= 400:
                 logger.error("Got error request from google: " + str(response.json()))
                 logger.error("Status: " + str(response.status_code))
-                return None
+                return []
             response_json = response.json()
             data = response_json["items"] if "items" in response_json else []
             formatted_data = []
@@ -63,7 +63,7 @@ class GoogleSearch:
 
                 
         logger.error("All google requests for " + query + " failed.")
-        return None   
+        return []   
     
     def __init__(self) -> None:
         self.google_credentials = copy.deepcopy(settings.GOOGLE_SEARCH_API_CREDENTIALS)
