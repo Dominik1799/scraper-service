@@ -131,16 +131,18 @@ def get_google_news_links(target_name, countries: list[SupportedCountry] = []) -
     gnews_query = '"' + target_name + '"'
     all_articles = []
     
-    if len(countries) == 0:
-        gp = GnewsParser(gnews_query)
-        articles = gp.get_articles(n=10)
-        all_articles.extend(articles)
-    else:
-        for country in countries:
-            gp = GnewsParser(gnews_query, country=country)
+    try:
+        if len(countries) == 0:
+            gp = GnewsParser(gnews_query)
             articles = gp.get_articles(n=10)
             all_articles.extend(articles)
-    
+        else:
+            for country in countries:
+                gp = GnewsParser(gnews_query, country=country)
+                articles = gp.get_articles(n=10)
+                all_articles.extend(articles)
+    except Exception:
+        logger.exception("Google news scraping failed.")
     result = []
     for art in all_articles:
         temp = UrlMetadata(url=art["link"], title=art["title"], source=UrlMetadataSourceType.GOOGLE_NEWS)

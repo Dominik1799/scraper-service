@@ -61,7 +61,11 @@ class BingNewsClient:
 def get_bing_news_results(target_name, countries: list[SupportedCountry]) -> list[UrlMetadata]:
     bing_query = '"' + target_name + '"'
     bn = BingNewsClient()
-    results = bn.get_bing_news_results(bing_query, countries)
+    try:
+        results = bn.get_bing_news_results(bing_query, countries)
+    except Exception:
+        logger.exception("Bing news API call failed.")
+        results = []
     return results
             
             

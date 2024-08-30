@@ -1,4 +1,5 @@
 from enum import Enum
+from pydantic import BaseModel
 
 class Topic(str, Enum):
     basic_check = "basic_check"
@@ -18,3 +19,7 @@ class SupportedSource(str, Enum):
     GOOGLE_NEWS = "google_news"
     GOOGLE = "google"
     BING_NEWS = "bing_news"
+    
+class ParseHtmlRequest(BaseModel):
+    url: str
+    html: str

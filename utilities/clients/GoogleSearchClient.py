@@ -87,6 +87,10 @@ def get_google_search_links(target_name, countries: list[SupportedCountry] = [])
     # google_query = '"' + target_name + '"' + __create_topic_search_string(topic, language)
     google_query = '"' + target_name + '"'
     gs = GoogleSearch()
-    results = gs.get_google_results(google_query, countries)
+    try:
+        results = gs.get_google_results(google_query, countries)
+    except Exception:
+        logger.exception("Google search API call failed.")
+        results = []
     
     return results
