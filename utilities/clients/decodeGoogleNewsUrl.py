@@ -4,7 +4,13 @@ from urllib.parse import quote, urlparse
 import requests
 from selectolax.parser import HTMLParser
 import logging
+import random
+import settings
+from utilities.request_util import proxy_request
 import time
+
+
+proxies = settings.TOR_PROXIES
 
 
 def setup_logging(log_file):
@@ -39,7 +45,7 @@ def get_base64_str(source_url):
 def get_decoding_params(base64_str):
     try:
 
-        response = requests.get(f"https://news.google.com/articles/{base64_str}")
+        response = requests.get(f"https://news.google.com/articles/{base64_str}", proxies={"http": random.choice(proxies), "https": random.choice(proxies)})
         response.raise_for_status()
 
         parser = HTMLParser(response.text)
@@ -79,9 +85,8 @@ def decode_url(signature, timestamp, base64_str):
             "content-type": "application/x-www-form-urlencoded;charset=UTF-8",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
         }
-        response = requests.post(
-            url, headers=headers, data=f"f.req={quote(json.dumps([[payload]]))}"
-        )
+        response = proxy_request(url, req_method="POST", try_normal_request_first=False, headers=headers, data=f"f.req={quote(json.dumps([[payload]]))}")
+        
         response.raise_for_status()
 
         parsed_data = json.loads(response.text.split("\n\n")[1])[:-2]

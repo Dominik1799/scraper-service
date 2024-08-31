@@ -12,6 +12,7 @@ class UrlMetadataSourceType(str, Enum):
     GOOGLE_NEWS = "GOOGLE_NEWS"
     GOOGLE = "GOOGLE"
     BING_NEWS = "BING_NEWS"
+    BING = "BING"
 
     
 class UrlMetadata(BaseModel):

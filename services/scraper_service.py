@@ -2,7 +2,7 @@ import logging
 from settings import LOG_LEVEL
 from utilities.parsers import html2text, readabilipy
 from databases.redis import get_cached_scraped_content, store_cached_scraped_content
-from utilities.clients import GoogleNewsClient, GoogleSearchClient, BingNewsClient
+from utilities.clients import GoogleNewsClient, GoogleSearchClient, BingNewsClient, BingSearchClient
 from schemas.response import UrlMetadata, ContentScraping, ScrapeContentFromUrlResponse, UrlDataResponse
 from schemas.request import SupportedCountry, SupportedSource
 from services.request_service import get_url_data
@@ -52,12 +52,15 @@ def get_urls_about_target(target_name: str, countries: list[SupportedCountry], s
     if (SupportedSource.GOOGLE_NEWS in sources):
         logging.info("Getting google news links")
         temp_result.extend(GoogleNewsClient.get_google_news_links(target_name, countries))
-    if (SupportedSource.GOOGLE in sources):
-        logging.info("Getting google search links")
-        temp_result.extend(GoogleSearchClient.get_google_search_links(target_name, countries))
     if (SupportedSource.BING_NEWS in sources):
         logging.info("Getting bing news links")
         temp_result.extend(BingNewsClient.get_bing_news_results(target_name, countries))
+    if (SupportedSource.GOOGLE in sources):
+        logging.info("Getting google search links")
+        temp_result.extend(GoogleSearchClient.get_google_search_links(target_name, countries))
+    if (SupportedSource.BING in sources):
+        logging.info("Getting bing links")
+        temp_result.extend(BingSearchClient.get_bing_search_results(target_name, countries))
     
     logging.info("Data fetching done. Deduplicating...")
     result: list[UrlMetadata] = []

@@ -19,6 +19,7 @@ class SupportedSource(str, Enum):
     GOOGLE_NEWS = "google_news"
     GOOGLE = "google"
     BING_NEWS = "bing_news"
+    BING = "bing"
     
 class ParseHtmlRequest(BaseModel):
     url: str
