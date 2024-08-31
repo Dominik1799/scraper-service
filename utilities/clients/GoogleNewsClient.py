@@ -86,10 +86,10 @@ class GnewsParser:
         # get correct urls
         for ent in raw_results:
             link = decode_google_news_url(ent["link"])
-            if link:
+            if link and link["status"]:
                 results.append({
                     "title": ent["title"],
-                    "link": link,
+                    "link": link["decoded_url"],
                     "published": self.convert_date_to_unix_timestamp(ent["published"]),
                     "source": ent["source"]["href"]
                 })

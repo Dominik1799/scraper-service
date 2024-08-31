@@ -6,7 +6,7 @@ import settings
 
 logger = logging.getLogger(__name__)
 
-
+# https://learn.microsoft.com/en-us/bing/search-apis/bing-news-search/reference/query-parameters
 class BingNewsClient:
     # https://learn.microsoft.com/en-us/bing/search-apis/bing-news-search/reference/market-codes#country-codes
     COUNTRIES_FILTER_CODES = {
