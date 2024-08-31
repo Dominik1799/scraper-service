@@ -45,7 +45,7 @@ def get_base64_str(source_url):
 def get_decoding_params(base64_str):
     try:
 
-        response = requests.get(f"https://news.google.com/articles/{base64_str}")
+        response = requests.get(f"https://news.google.com/articles/{base64_str}", proxies={"http": random.choice(proxies), "https": random.choice(proxies)})
         response.raise_for_status()
 
         parser = HTMLParser(response.text)
