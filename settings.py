@@ -28,6 +28,22 @@ GOOGLE_SEARCH_API_CREDENTIALS = GOOGLE_SEARCH_API_CREDENTIALS.split(",")
 
 BING_API_KEY = os.environ.get("BING_API_KEY") or None
 
+SOCIAL_MEDIA_WEBSITES = [
+    "linkedin.",
+    "facebook.",
+    "instagram.",
+    "twitter.",
+    "x.com",
+    "youtube."
+    "youtu.be",
+    "9gag.com",
+    "reddit.com",
+    "redd.it",
+    "quora.com",
+    "tiktok.com",
+    "vimeo."
+]
+
 
 TOPIC_SEARCH_KEYWORDS = {
     "basic_check": {

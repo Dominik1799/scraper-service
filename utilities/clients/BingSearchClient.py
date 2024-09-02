@@ -9,14 +9,40 @@ logger = logging.getLogger(__name__)
 # https://learn.microsoft.com/en-us/bing/search-apis/bing-web-search/reference/query-parameters
 class BingSearchClient:
     # https://learn.microsoft.com/en-us/bing/search-apis/bing-news-search/reference/market-codes#country-codes
+    # if not on the link above, search for country codes here: 
+    # https://www.bing.com/account/general?ru=https%3a%2f%2fwww.bing.com%2f%3fsetlang%3den%26cc%3dsk%26cc%3dSK&FORM=O2HV65&id=region_section#region-section
     COUNTRIES_FILTER_CODES = {
         SupportedCountry.SLOVAKIA: "SK",
         SupportedCountry.USA: "US",
         SupportedCountry.GREAT_BRITAIN: "GB",
         SupportedCountry.GERMANY: "DE",
-        SupportedCountry.CZECH_REPUBLIC: "CZ",
+        SupportedCountry.CZECHIA: "CZ",
         SupportedCountry.AUSTRALIA: "AU",
         SupportedCountry.NEW_ZEALAND: "NZ",
+        SupportedCountry.ITALY: "IT",
+        SupportedCountry.AUSTRIA: "AT",
+        SupportedCountry.BELGIUM: "BE",
+        SupportedCountry.BULGARIA: "BG",
+        SupportedCountry.CROATIA: "HR",
+        SupportedCountry.CYPRUS: "CY",
+        SupportedCountry.DENMARK: "DK",
+        SupportedCountry.ESTONIA: "EE",
+        SupportedCountry.FINLAND: "FI",
+        SupportedCountry.FRANCE: "FR",
+        SupportedCountry.GREECE: "GR",
+        SupportedCountry.HUNGARY: "HU",
+        SupportedCountry.IRELAND: "IE",
+        SupportedCountry.LATVIA: "LV",
+        SupportedCountry.LITHUANIA: "LT",
+        SupportedCountry.LUXEMBOURG: "LU",
+        SupportedCountry.MALTA: "MT",
+        SupportedCountry.NETHERLANDS: "NL",
+        SupportedCountry.POLAND: "PL",
+        SupportedCountry.PORTUGAL: "PT",
+        SupportedCountry.ROMANIA: "RO",
+        SupportedCountry.SLOVENIA: "SI",
+        SupportedCountry.SPAIN: "ES",
+        SupportedCountry.SWEDEN: "SE",
     }
     
     def get_bing_search_results(self, query: str, countries: list[SupportedCountry]) -> list[UrlMetadata]:

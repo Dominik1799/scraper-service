@@ -6,13 +6,39 @@ class Topic(str, Enum):
 
 
 class SupportedCountry(str, Enum):
-    SLOVAKIA = "slovakia"
     USA = "usa"
-    GREAT_BRITAIN = "great_britain"
-    GERMANY = "germany"
-    CZECH_REPUBLIC = "czech_republic"
     AUSTRALIA = "australia"
     NEW_ZEALAND = "new_zealand"
+    GREAT_BRITAIN = "great_britain"
+    # EU
+    GERMANY = "germany"
+    CZECHIA = "czechia"
+    SLOVAKIA = "slovakia"
+    ITALY = "italy"
+    AUSTRIA = "austria"
+    BELGIUM = "belgium"
+    BULGARIA = "bulgaria"
+    CROATIA = "croatia"
+    CYPRUS = "cyprus"
+    DENMARK = "denmark"
+    ESTONIA = "estonia"
+    FINLAND = "finland"
+    FRANCE = "france"
+    GREECE = "greece"
+    HUNGARY = "hungary"
+    IRELAND = "ireland"
+    LATVIA = "latvia"
+    LITHUANIA = "lithuania"
+    LUXEMBOURG = "luxembourg"
+    MALTA = "malta"
+    NETHERLANDS = "netherlands"
+    POLAND = "poland"
+    PORTUGAL = "portugal"
+    ROMANIA = "romania"
+    SLOVENIA = "slovenia"
+    SPAIN = "spain"
+    SWEDEN = "sweden"
+    
 
 
 class SupportedSource(str, Enum):

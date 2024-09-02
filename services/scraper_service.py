@@ -6,6 +6,7 @@ from utilities.clients import GoogleNewsClient, GoogleSearchClient, BingNewsClie
 from schemas.response import UrlMetadata, ContentScraping, ScrapeContentFromUrlResponse, UrlDataResponse
 from schemas.request import SupportedCountry, SupportedSource
 from services.request_service import get_url_data
+import settings
 
 logging.basicConfig(level=LOG_LEVEL)
 
@@ -44,9 +45,15 @@ def scrape_content_from_url(url: str) -> ScrapeContentFromUrlResponse:
 
 
 
+def __is_social_media(url) -> bool:
+    for sm in settings.SOCIAL_MEDIA_WEBSITES:
+        if sm in url:
+            return True
+    return False
 
 
-def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource]) -> list[UrlMetadata]:
+
+def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource], remove_social_media: bool = True) -> list[UrlMetadata]:
     temp_result: list[UrlMetadata] = []
     sources = set(sources)
     if (SupportedSource.GOOGLE_NEWS in sources):
@@ -67,6 +74,8 @@ def get_urls_about_target(target_name: str, countries: list[SupportedCountry], s
     seen_urls = set()
     for res in temp_result:
         if res.url in seen_urls:
+            continue
+        if remove_social_media and __is_social_media(res.url):
             continue
         result.append(res)
     return result
