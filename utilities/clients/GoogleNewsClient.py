@@ -18,31 +18,33 @@ class GnewsParser:
         SupportedCountry.USA: "&hl=en-US&gl=US&ceid=US:en",
         SupportedCountry.GREAT_BRITAIN: "&hl=en-GB&gl=GB&ceid=GB:en",
         SupportedCountry.GERMANY: "&hl=de&gl=DE&ceid=DE:de",
-        SupportedCountry.CZECH_REPUBLIC: "&hl=cs&gl=CZ&ceid=CZ:cs",
+        SupportedCountry.CZECHIA: "&hl=cs&gl=CZ&ceid=CZ:cs",
         SupportedCountry.AUSTRALIA: "&hl=en-AU&gl=AU&ceid=AU%3Aen",
         SupportedCountry.NEW_ZEALAND: "&hl=en-NZ&gl=NZ&ceid=NZ%3Aen",
-        # TODO: uncomment them when we add their support to SupportedCountries object
-        # "bg-bg": "&hl=bg&gl=BG&ceid=BG:bg", # bulgarian
-        # "fr-fr": "&hl=fr&gl=FR&ceid=FR:fr",
-        # "fr-be": "&hl=fr&gl=BE&ceid=BE:fr", # belgium
-        # "de-at": "&hl=de&gl=AT&ceid=AT:de", # austria
-        # "de-ch": "&hl=de&gl=CH&ceid=CH:de", # switzerland
-        # "el-gr": "&hl=el&gl=GR&ceid=GR:el", # greek
-        # "nl-nl": "&hl=nl&gl=NL&ceid=NL:nl", # dutch
-        # "nl-be": "&hl=nl&gl=BE&ceid=BE:nl", # belgium
-        # "hu-hu": "&hl=hu&gl=HU&ceid=HU:hu",
-        # "it-it": "&hl=it&gl=IT&ceid=IT:it",
-        # "lv-lv": "&hl=lv&gl=LV&ceid=LV:lv", # latvia
-        # "en-lv": "&hl=en-LV&gl=LV&ceid=LV:en", # latvia-eng
-        # "lt-lt": "&hl=lt&gl=LT&ceid=LT:lt", # lithuania
-        # "pl-pl": "&hl=pl&gl=PL&ceid=PL:pl", # polish
-        # "pt-pt": "&hl=pt-PT&gl=PT&ceid=PT:pt-150", # portugal
-        # "ro-ro": "&hl=ro&gl=RO&ceid=RO:ro", # romanian
-        # "sl-sl": "&hl=sl&gl=SI&ceid=SI:sl",# slovenian
-        # "uk-ua": "&hl=uk&gl=UA&ceid=UA:uk", # ukraine
-        # "en-gl": "&hl=en-001", # global english articles
-        # "en-au": "&hl=en-AU&gl=AU&ceid=AU%3Aen", # global english articles
-        # "en-nz": "&hl=en-NZ&gl=NZ&ceid=NZ%3Aen" # global english articles
+        SupportedCountry.ITALY: "&hl=it&gl=IT&ceid=IT%3Ait",
+        SupportedCountry.AUSTRIA: "&hl=de&gl=AT&ceid=AT%3Ade",
+        SupportedCountry.BELGIUM: "&hl=nl&gl=BE&ceid=BE%3Anl",
+        SupportedCountry.BULGARIA: "&hl=bg&gl=BG&ceid=BG%3Abg",
+        SupportedCountry.CROATIA: "&hl=bg&gl=BG&ceid=BG%3Abg", # I cannot find locale for croatia
+        SupportedCountry.CYPRUS: "&hl=bg&gl=BG&ceid=BG%3Abg", # I cannot find locale for cyprus
+        SupportedCountry.DENMARK: "&hl=sv&gl=SE&ceid=SE%3Asv", # I cannot find locale for denmark
+        SupportedCountry.ESTONIA: "&hl=et-EE&gl=EE&ceid=EE%3Aet",
+        SupportedCountry.FINLAND: "&hl=fi-FI&gl=FI&ceid=FI%3Afi",
+        SupportedCountry.FRANCE: "&hl=fr&gl=FR&ceid=FR%3Afr",
+        SupportedCountry.GREECE: "&hl=el&gl=GR&ceid=GR%3Ael",
+        SupportedCountry.HUNGARY: "&hl=hu&gl=HU&ceid=HU%3Ahu",
+        SupportedCountry.IRELAND: "&hl=en-IE&gl=IE&ceid=IE%3Aen",
+        SupportedCountry.LATVIA: "&hl=lv&gl=LV&ceid=LV%3Alv",
+        SupportedCountry.LITHUANIA: "&hl=lt&gl=LT&ceid=LT%3Alt",
+        SupportedCountry.LUXEMBOURG: "&hl=nl&gl=BE&ceid=BE%3Anl", # I cannot find locale for luxembourg
+        SupportedCountry.MALTA: "&hl=el&gl=GR&ceid=GR%3Ael", # I cannot find locale for malta
+        SupportedCountry.NETHERLANDS: "&hl=nl&gl=NL&ceid=NL%3Anl",
+        SupportedCountry.POLAND: "&hl=pl&gl=PL&ceid=PL%3Apl",
+        SupportedCountry.PORTUGAL: "&hl=pt-PT&gl=PT&ceid=PT%3Apt-150",
+        SupportedCountry.ROMANIA: "&hl=ro&gl=RO&ceid=RO%3Aro",
+        SupportedCountry.SLOVENIA: "&hl=sl&gl=SI&ceid=SI%3Asl",
+        SupportedCountry.SPAIN: "&hl=es&gl=ES&ceid=ES%3Aes",
+        SupportedCountry.SWEDEN: "&hl=sv&gl=SE&ceid=SE%3Asv",
     }
 
     def __init__(self, query, from_date="", to_date="", country: SupportedCountry = SupportedCountry.USA):
