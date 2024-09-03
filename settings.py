@@ -44,6 +44,8 @@ SOCIAL_MEDIA_WEBSITES = [
     "vimeo."
 ]
 
+SCRAPE_WITH_PYTHON_ONLY = os.getenv("ENV_VAR", 'False').lower() in ('true', '1', 't')
+
 
 TOPIC_SEARCH_KEYWORDS = {
     "basic_check": {
