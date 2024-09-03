@@ -2,3 +2,6 @@
 __pycache__/
 .env
 *.log
+node_modules
+utilities/parsers/d2m/temp/html/*.html
+utilities/parsers/d2m/temp/md/*.md

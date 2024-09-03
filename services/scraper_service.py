@@ -1,31 +1,41 @@
 import logging
 from settings import LOG_LEVEL
-from utilities.parsers import html2text, readabilipy
+from utilities.parsers.d2m.dm2_extractor import extract_text_as_semantic_md
+from utilities.parsers.readability.readability_extractor import extract_text_with_readability
+from utilities.parsers.html2text.html2text_extractor import extract_text_with_html2text
 from databases.redis import get_cached_scraped_content, store_cached_scraped_content
 from utilities.clients import GoogleNewsClient, GoogleSearchClient, BingNewsClient, BingSearchClient
 from schemas.response import UrlMetadata, ContentScraping, ScrapeContentFromUrlResponse, UrlDataResponse
 from schemas.request import SupportedCountry, SupportedSource
 from services.request_service import get_url_data
 import settings
+from typing import Tuple
 
 logging.basicConfig(level=LOG_LEVEL)
 
+def __extract_text(html: str) -> Tuple[str, bool]:
+    if not settings.SCRAPE_WITH_PYTHON_ONLY:
+        logging.info("Trying extracting text with mozilla readability")
+        text = extract_text_with_readability(html)
+        if text is not None:
+            logging.info("Mozilla readabilty success, setting article flag to True")
+            return text, True
+        logging.info("Trying extracting text as semantic markdown")
+        text = extract_text_as_semantic_md(html)
+        if text is not None:
+            logging.info("Semantic markdown success")
+            return text, False
+    logging.info("Extracting via default html2text")
+    return extract_text_with_html2text(html), False
 
 def __scrape_content_from_html(url: str, html: str) -> ContentScraping:
     # check cache
     content = get_cached_scraped_content(url)
     if content is not None:
         return content
-    article_flag = False
-    # first try readability from mozila
-    data = readabilipy.parse_html(html)
-    if data is not None:
-        article_flag = True
-    else:
-        # now just extract using html2text
-        data = html2text.parse_html(html)
-    data = data if data is not None else ""
-    content = ContentScraping(parsed_data=data, is_probably_article=article_flag)
+    clean_text, article_flag = __extract_text(html)
+    clean_text = clean_text if clean_text is not None else ""
+    content = ContentScraping(parsed_data=clean_text, is_probably_article=article_flag)
     store_cached_scraped_content(url, content)
     return content
 

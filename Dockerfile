@@ -14,7 +14,7 @@ COPY . .
 
 RUN chmod 777 /app
 
-RUN python deployment_setup.py
+RUN python setup_js_dependencies.py
 
 EXPOSE 8000
 
