@@ -36,7 +36,8 @@ def __scrape_content_from_html(url: str, html: str) -> ContentScraping:
     clean_text, article_flag = __extract_text(html)
     clean_text = clean_text if clean_text is not None else ""
     content = ContentScraping(parsed_data=clean_text, is_probably_article=article_flag)
-    store_cached_scraped_content(url, content)
+    if clean_text != "" and not clean_text.isspace():
+        store_cached_scraped_content(url, content)
     return content
 
 
