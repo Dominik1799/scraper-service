@@ -1,9 +1,8 @@
-import logging
-import settings
 import os
 import subprocess
 import uuid
-
+import logging
+import settings
 
 logging.basicConfig(level=settings.LOG_LEVEL)
 
@@ -11,15 +10,6 @@ logging.basicConfig(level=settings.LOG_LEVEL)
 TEMP_HTML_DIR = "temp/html"
 TEMP_MD_DIR = "temp/md"
 
-# dont call this from the code directly, made to be run only on a docker build
-def initial_setup():
-    work_dir = os.path.dirname(os.path.abspath(__file__))
-    command = ["npx", "--yes", "d2m@latest", "-h"]
-    install_run = subprocess.run(command, capture_output=True, text=True, cwd=work_dir)
-    if install_run.returncode != 0:
-        logging.error(f"Cannot install d2m. Error: {install_run.stderr}")
-        exit(1)
-    logging.info("Sucessfully installed d2m.")
 
 
 def extract_text_as_semantic_md(raw_html: str) -> str | None:

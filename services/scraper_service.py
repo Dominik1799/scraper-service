@@ -1,6 +1,6 @@
 import logging
 from settings import LOG_LEVEL
-from utilities.parsers.d2m.dm2_extractor import extract_text_as_semantic_md
+from utilities.parsers.d2m.d2m_extractor import extract_text_as_semantic_md
 from utilities.parsers.readability.readability_extractor import extract_text_with_readability
 from utilities.parsers.html2text.html2text_extractor import extract_text_with_html2text
 from databases.redis import get_cached_scraped_content, store_cached_scraped_content

@@ -2,12 +2,6 @@ import os
 import sys
 import subprocess
 from contextlib import contextmanager
-import settings
-import logging
-
-logging.basicConfig(level=settings.LOG_LEVEL)
-
-
 
 @contextmanager
 def chdir(path):
@@ -41,5 +35,5 @@ def initial_setup():
             returncode = 1
     if returncode != 0:
         exit(1)
-    logging.info("Sucessfully installed Mozilla readabilty.")
+    print("Sucessfully installed Mozilla readabilty.")
 
