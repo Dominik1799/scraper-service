@@ -36,6 +36,7 @@ SOCIAL_MEDIA_WEBSITES = [
     "x.com",
     "youtube."
     "youtu.be",
+    "youtube.com"
     "9gag.com",
     "reddit.com",
     "redd.it",
