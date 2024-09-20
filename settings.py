@@ -34,14 +34,14 @@ SOCIAL_MEDIA_WEBSITES = [
     "instagram.",
     "twitter.",
     "x.com",
-    "youtube."
+    "youtube.",
     "youtu.be",
-    "youtube.com"
     "9gag.com",
     "reddit.com",
     "redd.it",
     "quora.com",
     "tiktok.com",
+    "pinterest",
     "vimeo."
 ]
 

@@ -67,6 +67,7 @@ def __is_social_media(url) -> bool:
 def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource], remove_social_media: bool = True) -> list[UrlMetadata]:
     temp_result: list[UrlMetadata] = []
     sources = set(sources)
+    # TODO: make this using asyncio
     if (SupportedSource.GOOGLE_NEWS in sources):
         logging.info("Getting google news links")
         temp_result.extend(GoogleNewsClient.get_google_news_links(target_name, countries))
@@ -88,6 +89,7 @@ def get_urls_about_target(target_name: str, countries: list[SupportedCountry], s
             continue
         if remove_social_media and __is_social_media(res.url):
             continue
+        seen_urls.add(res.url)
         result.append(res)
     return result
     
