@@ -9,6 +9,7 @@ from schemas.response import UrlMetadata, ContentScraping, ScrapeContentFromUrlR
 from schemas.request import SupportedCountry, SupportedSource
 from services.request_service import get_url_data
 import settings
+import asyncio
 from typing import Tuple
 
 logging.basicConfig(level=LOG_LEVEL)
@@ -64,23 +65,27 @@ def __is_social_media(url) -> bool:
 
 
 
-def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource], remove_social_media: bool = True) -> list[UrlMetadata]:
+async def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource], remove_social_media: bool = True) -> list[UrlMetadata]:
     temp_result: list[UrlMetadata] = []
     sources = set(sources)
+    tasks = []
     # TODO: make this using asyncio
     if (SupportedSource.GOOGLE_NEWS in sources):
         logging.info("Getting google news links")
-        temp_result.extend(GoogleNewsClient.get_google_news_links(target_name, countries))
+        tasks.append(GoogleNewsClient.get_google_news_links(target_name, countries))
     if (SupportedSource.BING_NEWS in sources):
         logging.info("Getting bing news links")
-        temp_result.extend(BingNewsClient.get_bing_news_results(target_name, countries))
+        tasks.append(BingNewsClient.get_bing_news_results(target_name, countries))
     if (SupportedSource.GOOGLE in sources):
         logging.info("Getting google search links")
-        temp_result.extend(GoogleSearchClient.get_google_search_links(target_name, countries))
+        tasks.append(GoogleSearchClient.get_google_search_links(target_name, countries))
     if (SupportedSource.BING in sources):
         logging.info("Getting bing links")
-        temp_result.extend(BingSearchClient.get_bing_search_results(target_name, countries))
-    
+        tasks.append(BingSearchClient.get_bing_search_results(target_name, countries))
+    gathered_results = await asyncio.gather(*tasks)
+    temp_result = []
+    for res in gathered_results:
+        temp_result.extend(res)
     logging.info("Data fetching done. Deduplicating...")
     result: list[UrlMetadata] = []
     seen_urls = set()

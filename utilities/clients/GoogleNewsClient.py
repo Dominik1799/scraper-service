@@ -3,7 +3,7 @@ import logging
 import feedparser
 from datetime import datetime, timedelta
 from utilities.clients.decodeGoogleNewsUrl import decode_google_news_url
-from utilities.request_util import proxy_request
+from utilities.request_util import async_proxy_request
 from schemas.response import UrlMetadata, UrlMetadataSourceType
 from schemas.request import SupportedCountry
 import settings
@@ -72,8 +72,8 @@ class GnewsParser:
             date_range += "+before:<BEFORE>".replace("<BEFORE>", to_date)
         return date_range
 
-    def get_raw_results(self):
-        gnews_response = proxy_request(self.__url, "GET", headers={'Cache-control': 'max-age=0'}, try_normal_request_first=True, timeout=15)
+    async def get_raw_results(self):
+        gnews_response = await async_proxy_request(self.__url, "GET", headers={'Cache-control': 'max-age=0'}, try_normal_request_first=True, timeout=15)
         logging.info("Url used for google news: " + self.__url)
         if gnews_response is None:
             return None
@@ -81,8 +81,9 @@ class GnewsParser:
         return res["entries"]
     
     
-    def get_articles(self, n=50) -> list:
-        raw_results = self.get_raw_results()[0:n]
+    async def get_articles(self, n=50) -> list:
+        raw_results = await self.get_raw_results()
+        raw_results = raw_results[0:n]
         results = []
         # get unix timestamp on each article
         # get correct urls
@@ -127,7 +128,7 @@ def __create_topic_search_string(topic, language):
         all_keywords.append(settings.TOPIC_SEARCH_KEYWORDS[topic][lang])
     return " " + " OR ".join(all_keywords)
 
-def get_google_news_links(target_name, countries: list[SupportedCountry] = []) -> list[UrlMetadata]:
+async def get_google_news_links(target_name, countries: list[SupportedCountry] = []) -> list[UrlMetadata]:
     # for this to work again we need requested language. Meaning we cannot create topic centered searches, only basic_checks
     # gnews_query = '"' + target_name + '"' + __create_topic_search_string(topic, language)
     gnews_query = '"' + target_name + '"'
@@ -136,12 +137,12 @@ def get_google_news_links(target_name, countries: list[SupportedCountry] = []) -
     try:
         if len(countries) == 0:
             gp = GnewsParser(gnews_query)
-            articles = gp.get_articles(n=10)
+            articles = await gp.get_articles(n=10)
             all_articles.extend(articles)
         else:
             for country in countries:
                 gp = GnewsParser(gnews_query, country=country)
-                articles = gp.get_articles(n=10)
+                articles = await gp.get_articles(n=10)
                 all_articles.extend(articles)
     except Exception:
         logger.exception("Google news scraping failed.")
