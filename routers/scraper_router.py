@@ -20,11 +20,11 @@ async def scrape_url(url: str = Query(...)) -> ScrapeContentFromUrlResponse:
         return HTTPException(status_code=500, detail="Failed to scrape the content from the provided URL due to the server error.")
 
 @router.get("/links-about-target", description="Scrape URLs about a target from various sources")
-def get_links_about_target(target_name: str, 
+async def get_links_about_target(target_name: str, 
                            country: List[SupportedCountry] = Query(max_length=3, default = []),
                            source: List[SupportedSource] = Query(default = [SupportedSource.GOOGLE_NEWS], min_length=1)) -> list[UrlMetadata]:
     try:
-        result = scraper_service.get_urls_about_target(target_name, country, source)
+        result = await scraper_service.get_urls_about_target(target_name, country, source)
         return result
     except Exception:
         logging.exception("Error: ")
