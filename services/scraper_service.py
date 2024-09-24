@@ -69,7 +69,6 @@ async def get_urls_about_target(target_name: str, countries: list[SupportedCount
     temp_result: list[UrlMetadata] = []
     sources = set(sources)
     tasks = []
-    # TODO: make this using asyncio
     if (SupportedSource.GOOGLE_NEWS in sources):
         logging.info("Getting google news links")
         tasks.append(GoogleNewsClient.get_google_news_links(target_name, countries))

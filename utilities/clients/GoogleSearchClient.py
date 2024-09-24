@@ -55,7 +55,6 @@ class GoogleSearch:
 
     # start pages from 1
     async def get_google_results(self, query: str, countries: list[SupportedCountry] = [], start: int = 1) -> list[UrlMetadata]:
-        
         # https://developers.google.com/custom-search/v1/reference/rest/v1/cse/list
         BASE_SEARCH_URL = "https://customsearch.googleapis.com/customsearch/v1?key={api_key}&cx={engine_id}&start={start}&q={query}"
         COUNTRY_CODE_FILTER = "&cr={country}"
