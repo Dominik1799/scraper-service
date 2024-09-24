@@ -33,7 +33,7 @@ function main() {
 
 	var html = readFile(inFilePath);
 	var doc = new JSDOM(html);
-    if (!isProbablyReaderable(doc.window.document, { minScore: 20 })) {
+    if (!isProbablyReaderable(doc.window.document, { minScore: 50 })) {
         exit(1);
     }
 	let reader = new Readability(doc.window.document);
