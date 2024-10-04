@@ -4,8 +4,8 @@ import feedparser
 from datetime import datetime, timedelta
 from utilities.clients.decodeGoogleNewsUrl import decode_google_news_url
 from utilities.request_util import async_proxy_request
-from schemas.response import UrlMetadata, UrlMetadataSourceType
-from schemas.request import SupportedCountry
+from schemas.response import UrlMetadata
+from schemas.request import SupportedCountry, SupportedSource
 import settings
 
 
@@ -148,6 +148,6 @@ async def get_google_news_links(target_name, countries: list[SupportedCountry] =
         logger.exception("Google news scraping failed.")
     result = []
     for art in all_articles:
-        temp = UrlMetadata(url=art["link"], title=art["title"], source=UrlMetadataSourceType.GOOGLE_NEWS)
+        temp = UrlMetadata(url=art["link"], title=art["title"], source=SupportedSource.GOOGLE_NEWS)
         result.append(temp)
     return result

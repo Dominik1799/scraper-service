@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
+from schemas.request import SupportedSource
 
 
 class UrlDataResponse(BaseModel):
@@ -7,18 +8,11 @@ class UrlDataResponse(BaseModel):
     downstream_response: int
     got_response: bool
 
-
-class UrlMetadataSourceType(str, Enum):
-    GOOGLE_NEWS = "GOOGLE_NEWS"
-    GOOGLE = "GOOGLE"
-    BING_NEWS = "BING_NEWS"
-    BING = "BING"
-
     
 class UrlMetadata(BaseModel):
     url: str
     title: str
-    source: UrlMetadataSourceType
+    source: SupportedSource
 
 class ContentScraping(BaseModel):
     parsed_data: str

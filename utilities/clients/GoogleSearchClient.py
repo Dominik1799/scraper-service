@@ -3,8 +3,8 @@ import copy
 import random
 import httpx
 import logging
-from schemas.response import UrlMetadata, UrlMetadataSourceType
-from schemas.request import SupportedCountry
+from schemas.response import UrlMetadata
+from schemas.request import SupportedCountry, SupportedSource
 
 
 logger = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class GoogleSearch:
                 data = response_json["items"] if "items" in response_json else []
                 formatted_data = []
                 for d in data:
-                    temp = UrlMetadata(url=d["link"], title=d["title"], source=UrlMetadataSourceType.GOOGLE)
+                    temp = UrlMetadata(url=d["link"], title=d["title"], source=SupportedSource.GOOGLE)
                     formatted_data.append(temp)
                 logger.info("Google search for " + query + " was successful")
                 return formatted_data

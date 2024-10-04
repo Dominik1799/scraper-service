@@ -1,5 +1,5 @@
-from schemas.request import SupportedCountry
-from schemas.response import UrlMetadata, UrlMetadataSourceType
+from schemas.request import SupportedCountry, SupportedSource
+from schemas.response import UrlMetadata
 import logging
 import settings
 import httpx
@@ -80,7 +80,7 @@ class BingNewsClient:
         final_result: list[UrlMetadata] = []
         for res in raw_results:
             final_result.append(
-                UrlMetadata(url=res["url"], title=res["name"], source=UrlMetadataSourceType.BING_NEWS)
+                UrlMetadata(url=res["url"], title=res["name"], source=SupportedSource.BING_NEWS)
             )
         return final_result
     
