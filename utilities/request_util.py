@@ -11,6 +11,32 @@ from settings import TOR_PROXIES, MAX_PROXY_RETRIES, LOG_LEVEL, \
 
 logger = logging.getLogger(__name__)
 
+
+# for google news only
+def simple_proxy_request(url: str, req_method: str, timeout=10, headers={}, **kwargs) -> requests.Response | None:
+    ua = UserAgent(
+        browsers=BROWSERS,
+        os=["windows", "linux", "macos"],
+        platforms=["pc"]
+    )
+    response = None
+    proxies = TOR_PROXIES
+    max_proxy_retries = MAX_PROXY_RETRIES if MAX_PROXY_RETRIES <= len(proxies) else len(proxies)
+    random.shuffle(proxies)
+    for i in range(max_proxy_retries):
+        headers["User-Agent"] = ua.random
+        headers["Cache-Control"] = ua.random
+        try:
+            response = requests.request(method=req_method, url=url, 
+                                        proxies={"http": proxies[i], "https": proxies[i]},
+                                        timeout=timeout, headers=headers, **kwargs)
+            if response.status_code < 300 and response.status_code >= 200:
+                logging.debug("Got 2xx with proxy using User-Agent")
+                return response
+        except Exception as e:
+            logger.debug("Traceback: ", exc_info=True)
+    return None
+
 def proxy_request(url: str, req_method: str, try_normal_request_first=True, timeout=10, headers={}, **kwargs) -> requests.Response | None:
     ua = UserAgent(
         browsers=BROWSERS,
@@ -26,26 +52,12 @@ def proxy_request(url: str, req_method: str, try_normal_request_first=True, time
             if response.status_code >= 200 and response.status_code < 300:
                 return response
         except Exception:
-            logger.info("Normal request not working for " + url)
+            logger.debug("Normal request not working for " + url)
             logger.debug("Traceback: ", exc_info=True)
 
 
     proxies = TOR_PROXIES
     max_proxy_retries = MAX_PROXY_RETRIES if MAX_PROXY_RETRIES <= len(proxies) else len(proxies)
-    random.shuffle(proxies)
-    for i in range(max_proxy_retries):
-        headers["User-Agent"] = ua.random
-        headers["Cache-Control"] = ua.random
-        try:
-            response = requests.request(method=req_method, url=url, 
-                                        proxies={"http": proxies[i], "https": proxies[i]},
-                                        timeout=timeout, headers=headers, **kwargs)
-            if response.status_code < 300 and response.status_code >= 200:
-                logging.info("Got 2xx with proxy using User-Agent")
-                return response
-        except Exception as e:
-            logging.error(e)
-            logger.debug("Traceback: ", exc_info=True)
     
     random.shuffle(proxies)
     country = get_country_from_url(url)
@@ -67,12 +79,12 @@ def proxy_request(url: str, req_method: str, try_normal_request_first=True, time
                 logging.info("Got 2xx with proxy using full fake Headers")
                 return response
         except Exception as e:
-            logging.info(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
+            logging.debug(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
             logger.debug("Traceback: ", exc_info=True)
         # use specific country in the first try, then use only us
         country = "us"
     
-        logging.info(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
+    logging.info(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
                  The status code {response.status_code if response is not None else "MISSING"} from the last request on {url}""")
     
     return response
@@ -93,7 +105,7 @@ async def async_proxy_request(url: str, req_method: str, try_normal_request_firs
                 if response.status_code >= 200 and response.status_code < 300:
                     return response
         except Exception:
-            logger.info("Normal request not working for " + url)
+            logger.debug("Normal request not working for " + url)
             logger.debug("Traceback: ", exc_info=True)
 
 
@@ -120,12 +132,12 @@ async def async_proxy_request(url: str, req_method: str, try_normal_request_firs
                     logging.info("Got 2xx with proxy using full fake Headers")
                     return response
         except Exception as e:
-            logging.info(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
+            logger.debug(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
             logger.debug("Traceback: ", exc_info=True)
         # use specific country in the first try, then use only us
         country = "us"
     
-        logging.info(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
+    logging.info(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
                  The status code {response.status_code if response is not None else "MISSING"} from the last request on {url}""")
     
     return response

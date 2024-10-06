@@ -67,7 +67,7 @@ class GoogleSearch:
             for creds_string in self.google_credentials:
                 engine_id, api_key = creds_string.split(":")
                 url = url.format(api_key=api_key, engine_id=engine_id, query=query, start=start)
-                logger.info("Url used for google: " + url)
+                logger.debug("Url used for google: " + url)
                 response = await client.get(url)
                 if response.status_code == 429:
                     logger.warning("Got 429 for engineId " + engine_id + ". Rotating...")
@@ -83,9 +83,9 @@ class GoogleSearch:
                     temp = UrlMetadataDto(url=d["link"], 
                                           title=d["title"], 
                                           source=SupportedSource.GOOGLE,
-                                          country= countries[0] if len(countries) == 1 else None)
+                                          country= countries[0] if len(countries) > 0 else None)
                     formatted_data.append(temp)
-                logger.info("Google search for " + query + " was successful")
+                logger.debug("Google search for " + query + " was successful")
                 return formatted_data
 
                 

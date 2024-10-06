@@ -6,15 +6,18 @@ class UrlDataCache(BaseModel):
     url: str
     title: str = ""
     sources: list[SupportedSource] = []
-    raw_html: str
-    parsed_content: str
+    raw_html: str = ""
+    parsed_content: str = ""
     is_probably_article: bool = False
-    matched_targets: list[str]
+    matched_targets: list[str] = []
     countries: list[SupportedCountry] = []
     cannot_scrape: bool = False
+    first_found: float
+    last_found: float
+    last_updated: float
 
 class UrlMetadataDto(BaseModel):
     url: str
     title: str
     source: SupportedSource
-    country: SupportedCountry = None
+    country: SupportedCountry | None = None

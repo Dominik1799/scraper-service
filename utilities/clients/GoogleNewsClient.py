@@ -76,7 +76,7 @@ class GnewsParser:
 
     async def get_raw_results(self):
         gnews_response = await async_proxy_request(self.__url, "GET", headers={'Cache-control': 'max-age=0'}, try_normal_request_first=True, timeout=15)
-        logging.info("Url used for google news: " + self.__url)
+        logging.debug("Url used for google news: " + self.__url)
         if gnews_response is None:
             return None
         res = feedparser.parse(gnews_response.text)

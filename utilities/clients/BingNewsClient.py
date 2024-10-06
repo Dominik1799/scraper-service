@@ -80,7 +80,7 @@ class BingNewsClient:
         # now convert bing format to our format
         final_result: list[UrlMetadataDto] = []
         for res in raw_results:
-            for data in res["value"]:
+            for data in res["results"]:
                 final_result.append(
                     UrlMetadataDto(url=data["url"], title=data["name"], source=SupportedSource.BING_NEWS, country=res["country"])
                 )
