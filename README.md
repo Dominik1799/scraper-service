@@ -21,8 +21,11 @@ I suggest visiting `http://localhost:8000/docs` to see the existing routes
 place a .env file into the root dir.
 
 ```
-REDIS_HOST=localhost
-REDIS_PORT=6379
+MONGODB_HOST=localhost
+MONGODB_PORT=27017
+MONGODB_USERNAME=root
+MONGODB_PASSWORD=example
+MONGODB_DATABASE=scraper-service
 
 // stored in bitwarden
 BING_API_KEY=keyyy

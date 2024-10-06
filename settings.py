@@ -18,10 +18,6 @@ TOR_PROXIES = list((os.getenv("TOR_PROXIES") or "http://127.0.0.1:8888,http://12
 MAX_PROXY_RETRIES = int(os.getenv("MAX_PROXY_RETRIES") or 2)
 LOG_LEVEL = int(os.getenv("LOG_LEVEL") or logging.INFO)
 
-REDIS_HOST = str(os.getenv("REDIS_HOST") or "localhost")
-REDIS_PORT = int(os.getenv("REDIS_PORT") or 6379)
-REDIS_DATABASE = int(os.getenv("REDIS_DATABASE") or 10)
-
 MONGODB_HOST = str(os.getenv("MONGODB_HOST") or "localhost")
 MONGODB_PORT = int(os.getenv("MONGODB_PORT") or 27017)
 MONGODB_USERNAME = str(os.getenv("MONGODB_USERNAME") or "admin")
