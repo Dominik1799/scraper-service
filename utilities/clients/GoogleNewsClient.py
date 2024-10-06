@@ -4,8 +4,9 @@ import feedparser
 from datetime import datetime, timedelta
 from utilities.clients.decodeGoogleNewsUrl import decode_google_news_url
 from utilities.request_util import async_proxy_request
-from schemas.response import UrlMetadata, UrlMetadataSourceType
-from schemas.request import SupportedCountry
+from schemas.response import UrlMetadata
+from schemas.request import SupportedCountry, SupportedSource
+from schemas.dto import UrlMetadataDto
 import settings
 
 
@@ -53,6 +54,7 @@ class GnewsParser:
         url = url.replace("<DATERANGE>", self.__get_date_range(from_date, to_date))
         url = url.replace("<LOCALE>", self.__get_locale(country))
         self.__url = url
+        self.__country = country
         
     def get_url(self):
         return self.__url
@@ -74,7 +76,7 @@ class GnewsParser:
 
     async def get_raw_results(self):
         gnews_response = await async_proxy_request(self.__url, "GET", headers={'Cache-control': 'max-age=0'}, try_normal_request_first=True, timeout=15)
-        logging.info("Url used for google news: " + self.__url)
+        logging.debug("Url used for google news: " + self.__url)
         if gnews_response is None:
             return None
         res = feedparser.parse(gnews_response.text)
@@ -94,7 +96,8 @@ class GnewsParser:
                     "title": ent["title"],
                     "link": link["decoded_url"],
                     "published": self.convert_date_to_unix_timestamp(ent["published"]),
-                    "source": ent["source"]["href"]
+                    "source": ent["source"]["href"],
+                    "country": self.__country
                 })
     
         return results
@@ -128,7 +131,7 @@ def __create_topic_search_string(topic, language):
         all_keywords.append(settings.TOPIC_SEARCH_KEYWORDS[topic][lang])
     return " " + " OR ".join(all_keywords)
 
-async def get_google_news_links(target_name, countries: list[SupportedCountry] = []) -> list[UrlMetadata]:
+async def get_google_news_links(target_name, countries: list[SupportedCountry] = []) -> list[UrlMetadataDto]:
     # for this to work again we need requested language. Meaning we cannot create topic centered searches, only basic_checks
     # gnews_query = '"' + target_name + '"' + __create_topic_search_string(topic, language)
     gnews_query = '"' + target_name + '"'
@@ -148,6 +151,6 @@ async def get_google_news_links(target_name, countries: list[SupportedCountry] =
         logger.exception("Google news scraping failed.")
     result = []
     for art in all_articles:
-        temp = UrlMetadata(url=art["link"], title=art["title"], source=UrlMetadataSourceType.GOOGLE_NEWS)
+        temp = UrlMetadataDto(url=art["link"], title=art["title"], source=SupportedSource.GOOGLE_NEWS, country=art["country"])
         result.append(temp)
     return result

@@ -3,8 +3,8 @@ import copy
 import random
 import httpx
 import logging
-from schemas.response import UrlMetadata, UrlMetadataSourceType
-from schemas.request import SupportedCountry
+from schemas.dto import UrlMetadataDto
+from schemas.request import SupportedCountry, SupportedSource
 
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class GoogleSearch:
         return cr_filter
 
     # start pages from 1
-    async def get_google_results(self, query: str, countries: list[SupportedCountry] = [], start: int = 1) -> list[UrlMetadata]:
+    async def get_google_results(self, query: str, countries: list[SupportedCountry] = [], start: int = 1) -> list[UrlMetadataDto]:
         # https://developers.google.com/custom-search/v1/reference/rest/v1/cse/list
         BASE_SEARCH_URL = "https://customsearch.googleapis.com/customsearch/v1?key={api_key}&cx={engine_id}&start={start}&q={query}"
         COUNTRY_CODE_FILTER = "&cr={country}"
@@ -67,7 +67,7 @@ class GoogleSearch:
             for creds_string in self.google_credentials:
                 engine_id, api_key = creds_string.split(":")
                 url = url.format(api_key=api_key, engine_id=engine_id, query=query, start=start)
-                logger.info("Url used for google: " + url)
+                logger.debug("Url used for google: " + url)
                 response = await client.get(url)
                 if response.status_code == 429:
                     logger.warning("Got 429 for engineId " + engine_id + ". Rotating...")
@@ -80,9 +80,12 @@ class GoogleSearch:
                 data = response_json["items"] if "items" in response_json else []
                 formatted_data = []
                 for d in data:
-                    temp = UrlMetadata(url=d["link"], title=d["title"], source=UrlMetadataSourceType.GOOGLE)
+                    temp = UrlMetadataDto(url=d["link"], 
+                                          title=d["title"], 
+                                          source=SupportedSource.GOOGLE,
+                                          country= countries[0] if len(countries) > 0 else None)
                     formatted_data.append(temp)
-                logger.info("Google search for " + query + " was successful")
+                logger.debug("Google search for " + query + " was successful")
                 return formatted_data
 
                 
@@ -106,7 +109,7 @@ def __create_topic_search_string(topic, language):
         all_keywords.append(settings.TOPIC_SEARCH_KEYWORDS[topic][lang])
     return " " + " OR ".join(all_keywords)
 
-async def get_google_search_links(target_name, countries: list[SupportedCountry] = []) -> list[UrlMetadata]:
+async def get_google_search_links(target_name, countries: list[SupportedCountry] = []) -> list[UrlMetadataDto]:
     # for this to work again we need requested language. Meaning we cannot create topic centered searches, only basic_checks
     # google_query = '"' + target_name + '"' + __create_topic_search_string(topic, language)
     google_query = '"' + target_name + '"'

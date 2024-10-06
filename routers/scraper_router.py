@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, BackgroundTasks
 from services import scraper_service
 from settings import LOG_LEVEL
 from typing import List
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/scraper", tags=["Scrape content"])
 @router.get("/scrape", description="Scrape content on the provided URL. Return raw data and also parsed data.")
 async def scrape_url(url: str = Query(...)) -> ScrapeContentFromUrlResponse:
     try:
-        data = scraper_service.scrape_content_from_url(url=url)
+        data = await scraper_service.scrape_content_from_url(url=url)
         return data
     except Exception as e:
         logging.exception("Error: ")
@@ -22,9 +22,10 @@ async def scrape_url(url: str = Query(...)) -> ScrapeContentFromUrlResponse:
 @router.get("/links-about-target", description="Scrape URLs about a target from various sources")
 async def get_links_about_target(target_name: str, 
                            country: List[SupportedCountry] = Query(max_length=3, default = []),
-                           source: List[SupportedSource] = Query(default = [SupportedSource.GOOGLE_NEWS], min_length=1)) -> list[UrlMetadata]:
+                           source: List[SupportedSource] = Query(default = [SupportedSource.GOOGLE_NEWS], min_length=1),
+                           background_tasks: BackgroundTasks = None) -> list[UrlMetadata]:
     try:
-        result = await scraper_service.get_urls_about_target(target_name, country, source)
+        result = await scraper_service.get_urls_about_target(target_name, country, source, remove_social_media=True, bg_task=background_tasks)
         return result
     except Exception:
         logging.exception("Error: ")

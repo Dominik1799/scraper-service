@@ -11,7 +11,7 @@ router = APIRouter(prefix="/request", tags=["Make any HTTP request"])
 @router.get("/get", description="Make downstream HTTP GET request. Returns object with raw page data")
 async def get_url_content(url: str = Query(...)) -> UrlDataResponse:
     try:
-        url_data = request_service.get_url_data(url)
+        url_data = await request_service.get_url_data(url)
         return url_data
     except Exception as e:
         logging.exception("Error: ")
