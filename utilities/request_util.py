@@ -76,7 +76,7 @@ def proxy_request(url: str, req_method: str, try_normal_request_first=True, time
                                     proxies={"http": proxies[i], "https": proxies[i]},
                                     headers=headers, **kwargs)
             if response.status_code < 300 and response.status_code >= 200:
-                logging.info("Got 2xx with proxy using full fake Headers")
+                logging.debug("Got 2xx with proxy using full fake Headers")
                 return response
         except Exception as e:
             logging.debug(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
@@ -84,7 +84,7 @@ def proxy_request(url: str, req_method: str, try_normal_request_first=True, time
         # use specific country in the first try, then use only us
         country = "us"
     
-    logging.info(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
+    logging.debug(f"""Failed to get 2xx from the provided URL with proxy using full fake Headers.
                  The status code {response.status_code if response is not None else "MISSING"} from the last request on {url}""")
     
     return response
@@ -129,7 +129,7 @@ async def async_proxy_request(url: str, req_method: str, try_normal_request_firs
                 response = await client.get(url, timeout=timeout,
                                             headers=headers, **kwargs)
                 if response.status_code < 300 and response.status_code >= 200:
-                    logging.info("Got 2xx with proxy using full fake Headers")
+                    logging.debug("Got 2xx with proxy using full fake Headers")
                     return response
         except Exception as e:
             logger.debug(f"{i + 1}. attempt - failed to get 2xx with proxy using full fake Headers")
