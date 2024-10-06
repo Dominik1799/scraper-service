@@ -19,17 +19,17 @@ logging.basicConfig(level=LOG_LEVEL)
 
 def __extract_text(html: str) -> Tuple[str, bool]:
     if not settings.SCRAPE_WITH_PYTHON_ONLY:
-        logging.info("Trying extracting text with mozilla readability")
+        logging.dbeug("Trying extracting text with mozilla readability")
         text = extract_text_with_readability(html)
         if text is not None:
-            logging.info("Mozilla readabilty success, setting article flag to True")
+            logging.debug("Mozilla readabilty success, setting article flag to True")
             return text, True
-        logging.info("Trying extracting text as semantic markdown")
+        logging.debug("Trying extracting text as semantic markdown")
         text = extract_text_as_semantic_md(html)
         if text is not None:
-            logging.info("Semantic markdown success")
+            logging.debug("Semantic markdown success")
             return text, False
-    logging.info("Extracting via default html2text")
+    logging.debug("Extracting via default html2text")
     return extract_text_with_html2text(html), False
 
 async def __scrape_content_from_html(url: str, html: str) -> ContentScraping:
