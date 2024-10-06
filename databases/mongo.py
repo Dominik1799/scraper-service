@@ -2,8 +2,7 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 import settings
 from schemas.request import SupportedCountry
-from schemas.response import UrlMetadata
-from schemas.dto import UrlDataCache
+from schemas.dto import UrlDataCache, UrlMetadataDto
 import logging
 
 
@@ -35,7 +34,7 @@ def ensure_initialized_db():
     client.close()
 
 
-def __create_new_url_data(metadata: UrlMetadata, target_name: str, countries: list[SupportedCountry], collection: Collection):
+def __create_new_url_data(metadata: UrlMetadataDto, target_name: str, collection: Collection):
     dc = UrlDataCache(url=metadata.url,
                       title=metadata.title,
                       sources=[metadata.source],
@@ -43,30 +42,29 @@ def __create_new_url_data(metadata: UrlMetadata, target_name: str, countries: li
                       parsed_content="",
                       is_probably_article=False,
                       matched_targets=[target_name],
-                      countries=countries,
+                      countries=[metadata.country] if metadata.country is not None else [],
                       cannot_scrape=False)
     dc_dict = dc.model_dump(mode="json")
     collection.insert_one(dc_dict)
 
-def __update_existing_url_match_data(existing_doc: dict, metadata: UrlMetadata, target_name: str, countries: list[SupportedCountry], collection: Collection):
+def __update_existing_url_match_data(existing_doc: dict, metadata: UrlMetadataDto, target_name: str, collection: Collection):
     dc = UrlDataCache.model_validate(existing_doc)
     if target_name not in dc.matched_targets:
         dc.matched_targets.append(target_name)
     if metadata.source not in dc.sources:
         dc.sources.append(metadata.source)
-    countries.extend(dc.countries)
-    deduplicated_countries = list(set(countries))
-    dc.countries = deduplicated_countries
+    if metadata.country is not None and metadata.country not in dc.countries:
+        dc.countries.append(metadata.country)
     dc_dict = dc.model_dump(mode="json")
     collection.replace_one({'url': metadata.url}, dc_dict)
 
 
-def upsert_found_urls(url_metadata: list[UrlMetadata], target_name: str, countries: list[SupportedCountry]):
+def upsert_found_urls(url_metadata: list[UrlMetadataDto], target_name: str):
     client = __create_mongo_client()
     collection = client[settings.MONGODB_DATABASE][settings.MONGODB_URL_DATA_CACHE_COLLECTION]
     for um in url_metadata:
         existing = collection.find_one({'url': um.url})
         if existing is None:
-            __create_new_url_data(um, target_name, countries, collection)
+            __create_new_url_data(um, target_name, collection)
         else:
-            __update_existing_url_match_data(existing, um, target_name, countries, collection)
+            __update_existing_url_match_data(existing, um, target_name, collection)

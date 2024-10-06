@@ -99,20 +99,6 @@ async def async_proxy_request(url: str, req_method: str, try_normal_request_firs
 
     proxies = TOR_PROXIES
     max_proxy_retries = MAX_PROXY_RETRIES if MAX_PROXY_RETRIES <= len(proxies) else len(proxies)
-    random.shuffle(proxies)
-    for i in range(max_proxy_retries):
-        headers["User-Agent"] = ua.random
-        headers["Cache-Control"] = ua.random
-        try:
-            async with httpx.AsyncClient(proxies={"http": proxies[i], "https": proxies[i]}) as client:
-                response = await client.request(method=req_method, url=url,
-                                                timeout=timeout, headers=headers, **kwargs)
-                if response.status_code < 300 and response.status_code >= 200:
-                    logging.info("Got 2xx with proxy using User-Agent")
-                    return response
-        except Exception as e:
-            logging.error(e)
-            logger.debug("Traceback: ", exc_info=True)
     
     random.shuffle(proxies)
     country = get_country_from_url(url)

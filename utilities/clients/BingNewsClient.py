@@ -1,5 +1,5 @@
 from schemas.request import SupportedCountry, SupportedSource
-from schemas.response import UrlMetadata
+from schemas.dto import UrlMetadataDto
 import logging
 import settings
 import httpx
@@ -45,12 +45,13 @@ class BingNewsClient:
         SupportedCountry.SWEDEN: "SE",
     }
     
-    async def get_bing_news_results(self, query: str, countries: list[SupportedCountry]) -> list[UrlMetadata]:
+    async def get_bing_news_results(self, query: str, countries: list[SupportedCountry]) -> list[UrlMetadataDto]:
         BASE_NEWS_URL = "https://api.bing.microsoft.com/v7.0/news/search?q={query}&safeSearch=Off".format(query=query)
         COUNTRY_CODE_FILTER = "&cc={country}"
         headers = {
             "Ocp-Apim-Subscription-Key": settings.BING_API_KEY
         }
+        # each dict contains results key (bing search results) and country key (country from which we got these results)
         raw_results: list[dict] = []
         if len(countries) == 0:
             async with httpx.AsyncClient() as client:
@@ -61,7 +62,7 @@ class BingNewsClient:
                     logging.warning(response.text)
                     return []
                 data = response.json()
-                raw_results = data["value"]
+                raw_results.append({"results": data["value"], "country": None})
         else:
             async with httpx.AsyncClient() as client:
                 for cr in countries:
@@ -74,19 +75,20 @@ class BingNewsClient:
                         logging.warning(response.text)
                         return raw_results
                     data = response.json()
-                    raw_results.extend(data["value"])
+                    raw_results.append({"results": data["value"], "country": cr})
         
         # now convert bing format to our format
-        final_result: list[UrlMetadata] = []
+        final_result: list[UrlMetadataDto] = []
         for res in raw_results:
-            final_result.append(
-                UrlMetadata(url=res["url"], title=res["name"], source=SupportedSource.BING_NEWS)
-            )
+            for data in res["value"]:
+                final_result.append(
+                    UrlMetadataDto(url=data["url"], title=data["name"], source=SupportedSource.BING_NEWS, country=res["country"])
+                )
         return final_result
     
     
 
-async def get_bing_news_results(target_name, countries: list[SupportedCountry]) -> list[UrlMetadata]:
+async def get_bing_news_results(target_name, countries: list[SupportedCountry]) -> list[UrlMetadataDto]:
     bing_query = '"' + target_name + '"'
     bn = BingNewsClient()
     try:

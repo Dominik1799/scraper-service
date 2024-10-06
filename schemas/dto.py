@@ -12,4 +12,9 @@ class UrlDataCache(BaseModel):
     matched_targets: list[str]
     countries: list[SupportedCountry] = []
     cannot_scrape: bool = False
-    
+
+class UrlMetadataDto(BaseModel):
+    url: str
+    title: str
+    source: SupportedSource
+    country: SupportedCountry = None

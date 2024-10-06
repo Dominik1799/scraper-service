@@ -1,5 +1,5 @@
 from schemas.request import SupportedCountry, SupportedSource
-from schemas.response import UrlMetadata
+from schemas.dto import UrlMetadataDto
 import httpx
 import logging
 import settings
@@ -45,12 +45,13 @@ class BingSearchClient:
         SupportedCountry.SWEDEN: "SE",
     }
     
-    async def get_bing_search_results(self, query: str, countries: list[SupportedCountry]) -> list[UrlMetadata]:
+    async def get_bing_search_results(self, query: str, countries: list[SupportedCountry]) -> list[UrlMetadataDto]:
         BASE_NEWS_URL = "https://api.bing.microsoft.com/v7.0/search?q={query}&safeSearch=Off".format(query=query)
         COUNTRY_CODE_FILTER = "&cc={country}"
         headers = {
             "Ocp-Apim-Subscription-Key": settings.BING_API_KEY
         }
+        # each dict contains results key (bing search results) and country key (country from which we got these results)
         raw_results: list[dict] = []
         if len(countries) == 0:
             async with httpx.AsyncClient() as client:
@@ -62,7 +63,7 @@ class BingSearchClient:
                     return []
                 data = response.json()
                 if "webPages" in data and "value" in data["webPages"]:
-                    raw_results = data["webPages"]["value"]
+                    raw_results.append({"results": data["webPages"]["value"], "country": None})
         else:
             async with httpx.AsyncClient() as client:
                 for cr in countries:
@@ -76,19 +77,20 @@ class BingSearchClient:
                         return raw_results
                     data = response.json()
                     if "webPages" in data and "value" in data["webPages"]:
-                        raw_results.extend(data["webPages"]["value"])
+                        raw_results.append({"results": data["webPages"]["value"], "country": cr})
         
         # now convert bing format to our format
-        final_result: list[UrlMetadata] = []
+        final_result: list[UrlMetadataDto] = []
         for res in raw_results:
-            final_result.append(
-                UrlMetadata(url=res["url"], title=res["name"], source=SupportedSource.BING)
-            )
+            for data in res["value"]:
+                final_result.append(
+                    UrlMetadataDto(url=data["url"], title=data["name"], source=SupportedSource.BING, country=res["country"])
+                )
         return final_result
     
     
 
-async def get_bing_search_results(target_name, countries: list[SupportedCountry]) -> list[UrlMetadata]:
+async def get_bing_search_results(target_name, countries: list[SupportedCountry]) -> list[UrlMetadataDto]:
     bing_query = '"' + target_name + '"'
     bn = BingSearchClient()
     try:

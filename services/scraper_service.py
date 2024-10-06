@@ -7,6 +7,8 @@ from databases.redis import get_cached_scraped_content, store_cached_scraped_con
 from utilities.clients import GoogleNewsClient, GoogleSearchClient, BingNewsClient, BingSearchClient
 from schemas.response import UrlMetadata, ContentScraping, ScrapeContentFromUrlResponse, UrlDataResponse
 from schemas.request import SupportedCountry, SupportedSource
+from schemas.dto import UrlMetadataDto
+from databases import mongo
 from services.request_service import get_url_data
 import settings
 import asyncio
@@ -66,7 +68,7 @@ def __is_social_media(url) -> bool:
 
 
 async def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource], remove_social_media: bool = True) -> list[UrlMetadata]:
-    temp_result: list[UrlMetadata] = []
+    temp_result: list[UrlMetadataDto] = []
     sources = set(sources)
     tasks = []
     if (SupportedSource.GOOGLE_NEWS in sources):
@@ -82,9 +84,10 @@ async def get_urls_about_target(target_name: str, countries: list[SupportedCount
         logging.info("Getting bing links")
         tasks.append(BingSearchClient.get_bing_search_results(target_name, countries))
     gathered_results = await asyncio.gather(*tasks)
-    temp_result = []
     for res in gathered_results:
         temp_result.extend(res)
+    # TODO: make this background task
+    mongo.upsert_found_urls(temp_result, target_name)
     logging.info("Data fetching done. Deduplicating...")
     result: list[UrlMetadata] = []
     seen_urls = set()
