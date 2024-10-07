@@ -55,7 +55,7 @@ class BingSearchClient:
         raw_results: list[dict] = []
         if len(countries) == 0:
             async with httpx.AsyncClient() as client:
-                response = client.get(BASE_NEWS_URL, headers=headers)
+                response = await client.get(BASE_NEWS_URL, headers=headers)
                 if response.status_code < 200 or response.status_code >= 300:
                     logging.warning("Got non 200 status code from BING for URL: " + BASE_NEWS_URL)
                     logging.warning("Status: " + str(response.status_code))

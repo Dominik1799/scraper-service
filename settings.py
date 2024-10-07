@@ -33,6 +33,8 @@ GOOGLE_SEARCH_API_CREDENTIALS = GOOGLE_SEARCH_API_CREDENTIALS.split(",")
 
 BING_API_KEY = os.environ.get("BING_API_KEY") or None
 
+FILE_EXTENSIONS = ["doc", "docx", "ppt", "pptx", "pdf", "xml", "json"]
+
 SOCIAL_MEDIA_WEBSITES = [
     "linkedin.",
     "facebook.",

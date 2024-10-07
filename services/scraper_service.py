@@ -66,6 +66,12 @@ def __is_social_media(url) -> bool:
             return True
     return False
 
+# very dumb method, replace ASAP
+def __is_file(url: str) -> bool:
+    for extension in settings.FILE_EXTENSIONS:
+        if url.endswith(f".{extension}"):
+            return True
+    return False
 
 
 async def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource], remove_social_media: bool = True, bg_task: BackgroundTasks = None) -> list[UrlMetadata]:
@@ -90,7 +96,7 @@ async def get_urls_about_target(target_name: str, countries: list[SupportedCount
     for res in gathered_results[1:]: # index 0 contains cached results
         temp_result.extend(res)
     # remove social media
-    clean_results = temp_result if not remove_social_media else [r for r in temp_result if not __is_social_media(r.url)]
+    clean_results = temp_result if not remove_social_media else [r for r in temp_result if not __is_social_media(r.url) and not __is_file(r.url)]
     # cache newly found URLs in the background
     bg_task.add_task(mongo.upsert_found_urls, copy.deepcopy(clean_results), target_name)
     # now add cached URLs
