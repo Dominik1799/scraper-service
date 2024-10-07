@@ -19,7 +19,7 @@ logging.basicConfig(level=LOG_LEVEL)
 
 def __extract_text(html: str) -> Tuple[str, bool]:
     if not settings.SCRAPE_WITH_PYTHON_ONLY:
-        logging.dbeug("Trying extracting text with mozilla readability")
+        logging.debug("Trying extracting text with mozilla readability")
         text = extract_text_with_readability(html)
         if text is not None:
             logging.debug("Mozilla readabilty success, setting article flag to True")
