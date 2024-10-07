@@ -24,7 +24,7 @@ def extract_text_as_semantic_md(raw_html: str) -> str | None:
     temp_md_file_path = os.path.join(abs_path_workdir, TEMP_MD_DIR, temp_file_name + ".md")
     try:
         command = ["npx", "d2m@latest", "-e", "-i", temp_html_file_path, "-o", temp_md_file_path]
-        d2m_run = subprocess.run(command, capture_output=True, text=True, timeout=20, cwd=abs_path_workdir) # timeout is in seconds
+        d2m_run = subprocess.run(command, capture_output=True, text=True, timeout=15, cwd=abs_path_workdir) # timeout is in seconds
         if d2m_run.returncode != 0:
             raise Exception(f"Cannot extract semantic md. Exit code: {d2m_run.returncode}\n Error: {d2m_run.stderr}")
         with open(temp_md_file_path, "r", encoding="utf-8") as md_f:
