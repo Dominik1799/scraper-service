@@ -11,7 +11,7 @@ async def get_url_data(url: str) -> UrlDataResponse:
         return UrlDataResponse(raw_data=cached.raw_html, downstream_response=200, got_response=False)
     response = await request_util.async_proxy_request(url=url, req_method="GET")
     if response == None:
-        mongo.upsert_url_data(url, html, "", cannot_scrape=True)
+        mongo.upsert_url_data(url, "", "", cannot_scrape=True)
         return UrlDataResponse(raw_data="", downstream_response=0, got_response=False)
     html = response.text
     mongo.upsert_url_data(url, html, "")
