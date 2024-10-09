@@ -118,23 +118,10 @@ class GnewsParser:
         return unix_timestamp
 
 
-
-def __create_topic_search_string(topic, language):
-    if topic == "basic_check":
-        return ""
-    # if language is specified and we support it
-    if language is not None and language in settings.TOPIC_SEARCH_KEYWORDS[topic]:
-        return " " + " OR ".join(settings.TOPIC_SEARCH_KEYWORDS[topic][language])
-    # else combine all keywords from all supported languages in specific topic
-    all_keywords = []
-    for lang in settings.TOPIC_SEARCH_KEYWORDS[topic]:
-        all_keywords.append(settings.TOPIC_SEARCH_KEYWORDS[topic][lang])
-    return " " + " OR ".join(all_keywords)
-
-async def get_google_news_links(target_name, countries: list[SupportedCountry] = []) -> list[UrlMetadataDto]:
-    # for this to work again we need requested language. Meaning we cannot create topic centered searches, only basic_checks
-    # gnews_query = '"' + target_name + '"' + __create_topic_search_string(topic, language)
+async def get_google_news_links(target_name, countries: list[SupportedCountry] = [], keywords: list[str] = []) -> list[UrlMetadataDto]:
     gnews_query = '"' + target_name + '"'
+    if len(keywords) != 0:
+        gnews_query = gnews_query + " AND (" + " OR ".join(keywords) + ")"
     all_articles = []
     
     try:

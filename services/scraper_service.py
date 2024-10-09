@@ -74,23 +74,25 @@ def __is_file(url: str) -> bool:
     return False
 
 
-async def get_urls_about_target(target_name: str, countries: list[SupportedCountry], sources: list[SupportedSource], remove_social_media: bool = True, bg_task: BackgroundTasks = None) -> list[UrlMetadata]:
+async def get_urls_about_target(target_name: str, countries: list[SupportedCountry], 
+                                sources: list[SupportedSource], remove_social_media: bool = True, 
+                                keywords: list[str] = [], bg_task: BackgroundTasks = None) -> list[UrlMetadata]:
     temp_result: list[UrlMetadataDto] = []
     sources = set(sources)
     tasks = []
-    tasks.append(mongo.get_cached_urls(target_name, countries, sources))
+    tasks.append(mongo.get_cached_urls(target_name, countries, sources, keywords))
     if (SupportedSource.GOOGLE_NEWS in sources):
         logging.info("Getting google news links")
-        tasks.append(GoogleNewsClient.get_google_news_links(target_name, countries))
+        tasks.append(GoogleNewsClient.get_google_news_links(target_name, countries, keywords))
     if (SupportedSource.BING_NEWS in sources):
         logging.info("Getting bing news links")
-        tasks.append(BingNewsClient.get_bing_news_results(target_name, countries))
+        tasks.append(BingNewsClient.get_bing_news_results(target_name, countries, keywords))
     if (SupportedSource.GOOGLE in sources):
         logging.info("Getting google search links")
-        tasks.append(GoogleSearchClient.get_google_search_links(target_name, countries))
+        tasks.append(GoogleSearchClient.get_google_search_links(target_name, countries, keywords))
     if (SupportedSource.BING in sources):
         logging.info("Getting bing links")
-        tasks.append(BingSearchClient.get_bing_search_results(target_name, countries))
+        tasks.append(BingSearchClient.get_bing_search_results(target_name, countries, keywords))
     gathered_results: list[list[UrlMetadataDto]] = await asyncio.gather(*tasks)
     cached: list[UrlMetadata] = [UrlMetadata(url=c.url, title=c.title, source=c.source) for c in gathered_results[0]]
     for res in gathered_results[1:]: # index 0 contains cached results
@@ -98,7 +100,7 @@ async def get_urls_about_target(target_name: str, countries: list[SupportedCount
     # remove social media
     clean_results = temp_result if not remove_social_media else [r for r in temp_result if not __is_social_media(r.url) and not __is_file(r.url)]
     # cache newly found URLs in the background
-    bg_task.add_task(mongo.upsert_found_urls, copy.deepcopy(clean_results), target_name)
+    bg_task.add_task(mongo.upsert_found_urls, copy.deepcopy(clean_results), target_name, keywords)
     # now add cached URLs
     clean_results.extend(cached)
     logging.info("Data fetching done. Deduplicating...")

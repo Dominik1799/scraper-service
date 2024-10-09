@@ -90,8 +90,10 @@ class BingSearchClient:
     
     
 
-async def get_bing_search_results(target_name, countries: list[SupportedCountry]) -> list[UrlMetadataDto]:
+async def get_bing_search_results(target_name, countries: list[SupportedCountry], keywords: list[str] = []) -> list[UrlMetadataDto]:
     bing_query = '"' + target_name + '"'
+    if len(keywords) != 0:
+        bing_query = bing_query + " AND (" + " OR ".join(keywords) + ")"
     bn = BingSearchClient()
     try:
         results = await bn.get_bing_search_results(bing_query, countries)
