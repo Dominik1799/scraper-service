@@ -88,8 +88,10 @@ class BingNewsClient:
     
     
 
-async def get_bing_news_results(target_name, countries: list[SupportedCountry]) -> list[UrlMetadataDto]:
+async def get_bing_news_results(target_name, countries: list[SupportedCountry], keywords: list[str] = []) -> list[UrlMetadataDto]:
     bing_query = '"' + target_name + '"'
+    if len(keywords) != 0:
+        bing_query = bing_query + " AND (" + " OR ".join(keywords) + ")"
     bn = BingNewsClient()
     try:
         results = await bn.get_bing_news_results(bing_query, countries)

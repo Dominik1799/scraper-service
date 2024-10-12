@@ -6,6 +6,7 @@ class UrlDataCache(BaseModel):
     url: str
     title: str = ""
     sources: list[SupportedSource] = []
+    additional_keyword_hashes: list[str] = []
     raw_html: str = ""
     parsed_content: str = ""
     is_probably_article: bool = False

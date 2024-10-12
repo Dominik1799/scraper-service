@@ -4,7 +4,9 @@ from settings import ROOT_PATH
 from routers import scraper_router, request_router
 from contextlib import asynccontextmanager
 from databases import mongo
+import logging
 
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

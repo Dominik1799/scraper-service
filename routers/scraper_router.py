@@ -23,9 +23,12 @@ async def scrape_url(url: str = Query(...)) -> ScrapeContentFromUrlResponse:
 async def get_links_about_target(target_name: str, 
                            country: List[SupportedCountry] = Query(max_length=3, default = []),
                            source: List[SupportedSource] = Query(default = [SupportedSource.GOOGLE_NEWS], min_length=1),
+                           keywords: List[str] = Query(default=[]),
                            background_tasks: BackgroundTasks = None) -> list[UrlMetadata]:
     try:
-        result = await scraper_service.get_urls_about_target(target_name, country, source, remove_social_media=True, bg_task=background_tasks)
+        result = await scraper_service.get_urls_about_target(target_name, country, 
+                                                             source, remove_social_media=True, 
+                                                             keywords=keywords, bg_task=background_tasks)
         return result
     except Exception:
         logging.exception("Error: ")
