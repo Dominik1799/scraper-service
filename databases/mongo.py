@@ -21,10 +21,10 @@ def __create_async_mongo_client():
 def __generate_additional_keywords_hash(keywords: list[str]) -> str | None:
     if len(keywords) == 0:
         return None
+    keywords = [k.lower() for k in keywords]
     keywords.sort()
-    combined_keywords = "".join(keywords)
-    md5_hash = hashlib.md5(combined_keywords.encode('utf-8'))
-    return md5_hash.hexdigest()
+    combined_keywords = "_".join(keywords)
+    return combined_keywords
 
 
 def ensure_initialized_db():
@@ -108,7 +108,7 @@ def __update_existing_url_data_after_parsing(existing_doc: dict, raw_html: str,
     dc.parsed_content = parsed_data
     dc.is_probably_article = is_probably_article
     dc.last_updated = ts
-    dc.cannot_scrape = True
+    dc.cannot_scrape = cannot_scrape
     dc_dict = dc.model_dump(mode="json")
     collection.replace_one({'url': dc.url}, dc_dict)
     

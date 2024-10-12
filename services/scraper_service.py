@@ -82,16 +82,16 @@ async def get_urls_about_target(target_name: str, countries: list[SupportedCount
     tasks = []
     tasks.append(mongo.get_cached_urls(target_name, countries, sources, keywords))
     if (SupportedSource.GOOGLE_NEWS in sources):
-        logging.info("Getting google news links")
+        logging.debug("Getting google news links")
         tasks.append(GoogleNewsClient.get_google_news_links(target_name, countries, keywords))
     if (SupportedSource.BING_NEWS in sources):
-        logging.info("Getting bing news links")
+        logging.debug("Getting bing news links")
         tasks.append(BingNewsClient.get_bing_news_results(target_name, countries, keywords))
     if (SupportedSource.GOOGLE in sources):
-        logging.info("Getting google search links")
+        logging.debug("Getting google search links")
         tasks.append(GoogleSearchClient.get_google_search_links(target_name, countries, keywords))
     if (SupportedSource.BING in sources):
-        logging.info("Getting bing links")
+        logging.debug("Getting bing links")
         tasks.append(BingSearchClient.get_bing_search_results(target_name, countries, keywords))
     gathered_results: list[list[UrlMetadataDto]] = await asyncio.gather(*tasks)
     cached: list[UrlMetadata] = [UrlMetadata(url=c.url, title=c.title, source=c.source) for c in gathered_results[0]]
@@ -103,7 +103,7 @@ async def get_urls_about_target(target_name: str, countries: list[SupportedCount
     bg_task.add_task(mongo.upsert_found_urls, copy.deepcopy(clean_results), target_name, keywords)
     # now add cached URLs
     clean_results.extend(cached)
-    logging.info("Data fetching done. Deduplicating...")
+    logging.debug("Data fetching done. Deduplicating...")
     result: list[UrlMetadata] = []
     seen_urls = set()
     # deduplicate
