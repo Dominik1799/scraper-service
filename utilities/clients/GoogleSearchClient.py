@@ -63,7 +63,7 @@ class GoogleSearch:
         else:
             COUNTRY_CODE_FILTER = ""
         url = BASE_SEARCH_URL + COUNTRY_CODE_FILTER
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=10) as client:
             for creds_string in self.google_credentials:
                 engine_id, api_key = creds_string.split(":")
                 url = url.format(api_key=api_key, engine_id=engine_id, query=query, start=start)

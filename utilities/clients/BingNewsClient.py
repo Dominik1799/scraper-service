@@ -54,7 +54,7 @@ class BingNewsClient:
         # each dict contains results key (bing search results) and country key (country from which we got these results)
         raw_results: list[dict] = []
         if len(countries) == 0:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=10) as client:
                 response = await client.get(BASE_NEWS_URL, headers=headers)
                 if response.status_code < 200 or response.status_code >= 300:
                     logging.warning("Got non 200 status code from BING for URL: " + BASE_NEWS_URL)
@@ -64,7 +64,7 @@ class BingNewsClient:
                 data = response.json()
                 raw_results.append({"results": data["value"], "country": None})
         else:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=10) as client:
                 for cr in countries:
                     cr_filter = COUNTRY_CODE_FILTER.format(country=BingNewsClient.COUNTRIES_FILTER_CODES[cr])
                     url = BASE_NEWS_URL + cr_filter
