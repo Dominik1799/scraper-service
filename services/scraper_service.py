@@ -14,6 +14,8 @@ import settings
 import copy
 import asyncio
 from typing import Tuple
+import httpx
+from httpx import AsyncClient
 
 logging.basicConfig(level=LOG_LEVEL)
 
@@ -66,8 +68,18 @@ def __is_social_media(url) -> bool:
             return True
     return False
 
-# very dumb method, replace ASAP
-def __is_file(url: str) -> bool:
+async def __is_file_hardcore_version(url: str, http_client: AsyncClient) -> bool:
+    head = await http_client.head(url)
+    if head.status_code > 299:
+        # fuck it, bail
+        return False
+    content_type = head.headers.get('Content-Type')
+    if content_type and 'html' in content_type:
+        return False
+    return True
+
+
+def __is_file_ez_version(url: str) -> bool:
     for extension in settings.FILE_EXTENSIONS:
         if url.endswith(f".{extension}"):
             return True
@@ -98,7 +110,21 @@ async def get_urls_about_target(target_name: str, countries: list[SupportedCount
     for res in gathered_results[1:]: # index 0 contains cached results
         temp_result.extend(res)
     # remove social media
-    clean_results = temp_result if not remove_social_media else [r for r in temp_result if not __is_social_media(r.url) and not __is_file(r.url)]
+    no_social_media_result = temp_result if not remove_social_media else [r for r in temp_result if not __is_social_media(r.url)]
+    # remove files ez
+    no_files_result = [r for r in no_social_media_result if not __is_file_ez_version(r.url)]
+    # remove files hardcore
+    clean_results: list[UrlMetadata] = []
+    tasks = []
+    async with httpx.AsyncClient() as client:
+        for res in no_files_result:
+            tasks.append(__is_file_hardcore_version(res.url, client))
+        result_flags = await asyncio.gather(*tasks)
+        for i in range(0, len(no_files_result)):
+            # if is file, continue
+            if result_flags[i]:
+                continue
+            clean_results.append(no_files_result[i])
     # cache newly found URLs in the background
     bg_task.add_task(mongo.upsert_found_urls, copy.deepcopy(clean_results), target_name, keywords)
     # now add cached URLs
