@@ -69,14 +69,22 @@ def __is_social_media(url) -> bool:
     return False
 
 async def __is_file_hardcore_version(url: str, http_client: AsyncClient) -> bool:
-    head = await http_client.head(url)
-    if head.status_code > 299:
-        # fuck it, bail
+    try:
+        head = await http_client.head(url)
+        if head.status_code > 299:
+            # fuck it, bail
+            return False
+        content_type = head.headers.get('Content-Type')
+        if content_type and 'html' in content_type:
+            return False
+        return True
+    # what to return in exceptions?
+    except httpx.ReadTimeout:
+        logging.warning(f"Got ReadTimeout from HEAD {url}")
         return False
-    content_type = head.headers.get('Content-Type')
-    if content_type and 'html' in content_type:
+    except Exception:
+        logging.exception(f"Exception occured while making HEAD request to {url}")
         return False
-    return True
 
 
 def __is_file_ez_version(url: str) -> bool:
