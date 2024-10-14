@@ -79,7 +79,7 @@ async def __is_file_hardcore_version(url: str, http_client: AsyncClient) -> bool
             return False
         return True
     # what to return in exceptions?
-    except httpx.ReadTimeout:
+    except httpx.TimeoutException:
         logging.warning(f"Got ReadTimeout from HEAD {url}")
         return False
     except Exception:
