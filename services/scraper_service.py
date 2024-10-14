@@ -70,7 +70,7 @@ def __is_social_media(url) -> bool:
 
 async def __is_file_hardcore_version(url: str, http_client: AsyncClient) -> bool:
     try:
-        head = await http_client.head(url)
+        head = await http_client.head(url, timeout=3)
         if head.status_code > 299:
             # fuck it, bail
             return False
