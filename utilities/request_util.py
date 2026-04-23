@@ -34,7 +34,7 @@ def simple_proxy_request(url: str, req_method: str, timeout=10, headers={}, **kw
                 logging.debug("Got 2xx with proxy using User-Agent")
                 return response
         except Exception as e:
-            logger.debug("Traceback: ", exc_info=True)
+            logger.exception("Failed to get 2xx with proxy using User-Agent")
     return None
 
 def proxy_request(url: str, req_method: str, try_normal_request_first=True, timeout=10, headers={}, **kwargs) -> requests.Response | None:
